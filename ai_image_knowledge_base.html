@@ -1,0 +1,1540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Image Generation — Complete Knowledge Base</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Fraunces:ital,wght@0,300;0,700;0,900;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #16161f;
+    --border: #1e1e2e;
+    --text: #e0dff5;
+    --muted: #7070a0;
+    --accent: #7c6af7;
+    --accent2: #e05cff;
+    --accent3: #3de8b0;
+    --accent4: #f7d76a;
+    --accent5: #ff7c5c;
+    --glow: rgba(124,106,247,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    padding: 80px 40px 60px;
+    text-align: center;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(124,106,247,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: var(--accent3);
+    background: rgba(61,232,176,0.08);
+    border: 1px solid rgba(61,232,176,0.2);
+    padding: 4px 14px;
+    border-radius: 100px;
+    margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(38px, 6vw, 72px);
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    background: linear-gradient(135deg, #fff 0%, var(--accent) 50%, var(--accent2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+  }
+  .hero p {
+    color: var(--muted);
+    max-width: 600px;
+    margin: 0 auto 32px;
+    font-size: 16px;
+  }
+
+  /* NAV PILLS */
+  .nav-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 28px;
+  }
+  .nav-pills a {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    padding: 6px 16px;
+    border-radius: 100px;
+    transition: all 0.2s;
+  }
+  .nav-pills a:hover { color: var(--text); border-color: var(--accent); background: var(--glow); }
+
+  /* LAYOUT */
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+  
+  section { padding: 64px 0; border-bottom: 1px solid var(--border); }
+
+  /* SECTION HEADER */
+  .section-header { margin-bottom: 40px; }
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(24px, 3.5vw, 38px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+  .section-desc { color: var(--muted); margin-top: 10px; max-width: 640px; font-size: 14px; }
+
+  /* PIPELINE VISUAL */
+  .pipeline {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 40px;
+    overflow-x: auto;
+  }
+  .pipeline-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    min-width: 100px;
+  }
+  .pipeline-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    border: 1px solid;
+  }
+  .pipeline-label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); text-align: center; }
+  .pipeline-name { font-size: 13px; font-weight: 500; text-align: center; }
+  .pipeline-arrow {
+    font-size: 20px;
+    color: var(--muted);
+    padding: 0 8px;
+    flex-shrink: 0;
+  }
+  .p1 { background: rgba(124,106,247,0.1); border-color: rgba(124,106,247,0.3); color: var(--accent); }
+  .p2 { background: rgba(224,92,255,0.1); border-color: rgba(224,92,255,0.3); color: var(--accent2); }
+  .p3 { background: rgba(61,232,176,0.1); border-color: rgba(61,232,176,0.3); color: var(--accent3); }
+  .p4 { background: rgba(247,215,106,0.1); border-color: rgba(247,215,106,0.3); color: var(--accent4); }
+  .p5 { background: rgba(255,124,92,0.1); border-color: rgba(255,124,92,0.3); color: var(--accent5); }
+
+  /* TABLES */
+  .table-wrap {
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    margin-bottom: 32px;
+  }
+  table { width: 100%; border-collapse: collapse; }
+  thead { background: var(--surface2); }
+  thead th {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 14px 18px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--surface2); }
+  tbody td { padding: 13px 18px; font-size: 13.5px; vertical-align: middle; }
+
+  .tag {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid;
+    white-space: nowrap;
+  }
+  .tag-free { color: var(--accent3); border-color: rgba(61,232,176,0.3); background: rgba(61,232,176,0.08); }
+  .tag-paid { color: var(--accent5); border-color: rgba(255,124,92,0.3); background: rgba(255,124,92,0.08); }
+  .tag-open { color: var(--accent); border-color: rgba(124,106,247,0.3); background: rgba(124,106,247,0.08); }
+  .tag-closed { color: var(--accent2); border-color: rgba(224,92,255,0.3); background: rgba(224,92,255,0.08); }
+  .tag-yes { color: var(--accent3); border-color: rgba(61,232,176,0.3); background: rgba(61,232,176,0.08); }
+  .tag-no { color: var(--muted); border-color: var(--border); background: transparent; }
+  .tag-warn { color: var(--accent4); border-color: rgba(247,215,106,0.3); background: rgba(247,215,106,0.08); }
+
+  a.paper-link {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px dashed rgba(124,106,247,0.4);
+    padding-bottom: 1px;
+    transition: all 0.2s;
+  }
+  a.paper-link:hover { color: var(--accent2); border-color: var(--accent2); }
+
+  .bar-wrap { display: flex; align-items: center; gap: 8px; }
+  .bar {
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width 0.3s;
+  }
+  .bar-label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); white-space: nowrap; }
+
+  /* COLAB CARD */
+  .colab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-top: 24px; }
+  .colab-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    position: relative;
+    transition: border-color 0.2s;
+  }
+  .colab-card:hover { border-color: var(--accent); }
+  .colab-card-icon { font-size: 28px; margin-bottom: 10px; }
+  .colab-card h4 { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+  .colab-card p { font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .colab-card .card-tag {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+  }
+
+  /* CONCEPT CARDS */
+  .concept-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+  .concept-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.2s;
+  }
+  .concept-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .concept-card .icon { font-size: 24px; margin-bottom: 10px; }
+  .concept-card h4 { font-size: 14px; font-weight: 600; margin-bottom: 6px; color: var(--text); }
+  .concept-card p { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+  /* CALLOUT */
+  .callout {
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 20px 0;
+    font-size: 13.5px;
+    line-height: 1.6;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    border: 1px solid;
+  }
+  .callout-warn { background: rgba(247,215,106,0.06); border-color: rgba(247,215,106,0.2); color: var(--text); }
+  .callout-info { background: rgba(124,106,247,0.06); border-color: rgba(124,106,247,0.2); color: var(--text); }
+  .callout-ok { background: rgba(61,232,176,0.06); border-color: rgba(61,232,176,0.2); color: var(--text); }
+  .callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+
+  /* FOOTER */
+  footer {
+    padding: 40px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* SCROLL TO TOP */
+  .back-top {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    width: 40px;
+    height: 40px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 16px;
+    transition: all 0.2s;
+    z-index: 100;
+  }
+  .back-top:hover { border-color: var(--accent); color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .container { padding: 0 16px; }
+    .hero { padding: 60px 20px 40px; }
+    section { padding: 48px 0; }
+    .pipeline { flex-direction: column; align-items: flex-start; }
+    .pipeline-arrow { transform: rotate(90deg); }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-badge">Complete Knowledge Base · 2024–2025</div>
+  <h1>AI Image Generation<br>Deep Reference</h1>
+  <p>Datasets · Models · Architectures · Fine-tuning Methods · Prompt Frameworks · Google Colab Tips — everything connected.</p>
+  <nav class="nav-pills">
+    <a href="#pipeline">⚙️ Full Pipeline</a>
+    <a href="#datasets">📦 Datasets</a>
+    <a href="#models">🎨 Image Models</a>
+    <a href="#comparison">📊 Model Comparison</a>
+    <a href="#finetuning">🔧 Fine-tuning</a>
+    <a href="#prompting">💬 Prompt Frameworks</a>
+    <a href="#concepts">🧠 Core Concepts</a>
+    <a href="#colab">☁️ Google Colab</a>
+  </nav>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ PIPELINE -->
+<section id="pipeline">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">How it actually works</div>
+      <div class="section-title">The Full Image Generation Pipeline</div>
+      <div class="section-desc">Every image you generate travels through this chain. Understanding each step unlocks real control over your outputs.</div>
+    </div>
+
+    <div class="pipeline">
+      <div class="pipeline-step">
+        <div class="pipeline-icon p1">📝</div>
+        <div class="pipeline-name">Prompt</div>
+        <div class="pipeline-label">your text</div>
+      </div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step">
+        <div class="pipeline-icon p2">🔤</div>
+        <div class="pipeline-name">CLIP</div>
+        <div class="pipeline-label">text → embedding</div>
+      </div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step">
+        <div class="pipeline-icon p3">🗜️</div>
+        <div class="pipeline-name">VAE Encode</div>
+        <div class="pipeline-label">latent space</div>
+      </div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step">
+        <div class="pipeline-icon p4">🕸️</div>
+        <div class="pipeline-name">UNet</div>
+        <div class="pipeline-label">denoising steps</div>
+      </div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step">
+        <div class="pipeline-icon p1">🎲</div>
+        <div class="pipeline-name">Sampler</div>
+        <div class="pipeline-label">controls noise path</div>
+      </div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step">
+        <div class="pipeline-icon p5">🖼️</div>
+        <div class="pipeline-name">VAE Decode</div>
+        <div class="pipeline-label">latent → pixels</div>
+      </div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step">
+        <div class="pipeline-icon p3">✅</div>
+        <div class="pipeline-name">Final Image</div>
+        <div class="pipeline-label">your output</div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Component</th>
+            <th>What it does</th>
+            <th>Why it matters</th>
+            <th>Tunable?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>CLIP</strong></td>
+            <td>Converts your text prompt into a vector of numbers (embedding) the model can understand</td>
+            <td>Quality of text understanding directly determines how well the image matches your intent</td>
+            <td><span class="tag tag-warn">Via prompt</span></td>
+          </tr>
+          <tr>
+            <td><strong>Latent Space</strong></td>
+            <td>Compressed representation of the image — 8× smaller than pixels, so math is fast</td>
+            <td>This is where all denoising happens; makes SD 10-100× more efficient than pixel-space models</td>
+            <td><span class="tag tag-warn">Indirectly</span></td>
+          </tr>
+          <tr>
+            <td><strong>Cross-Attention</strong></td>
+            <td>Mechanism that links text embedding to image features during denoising</td>
+            <td>The bridge between "what you said" and "what appears". LoRA modifies these weights.</td>
+            <td><span class="tag tag-yes">LoRA / ControlNet</span></td>
+          </tr>
+          <tr>
+            <td><strong>UNet</strong></td>
+            <td>The main neural network — iteratively removes noise from a random latent image</td>
+            <td>The "brain" of generation; where fine-tuning (LoRA, DreamBooth) happens</td>
+            <td><span class="tag tag-yes">LoRA / full fine-tune</span></td>
+          </tr>
+          <tr>
+            <td><strong>VAE</strong></td>
+            <td>Variational Autoencoder — encodes images into latent space &amp; decodes back to pixels</td>
+            <td>Better VAE = sharper details, more accurate colors. SDXL has an improved VAE over SD 1.5.</td>
+            <td><span class="tag tag-yes">Swappable</span></td>
+          </tr>
+          <tr>
+            <td><strong>Sampler</strong></td>
+            <td>Algorithm controlling how noise is removed each step (DDIM, Euler, DPM++, etc.)</td>
+            <td>Affects speed vs quality tradeoff; DPM++ 2M Karras is a popular balanced choice</td>
+            <td><span class="tag tag-yes">Selectable</span></td>
+          </tr>
+          <tr>
+            <td><strong>Seed</strong></td>
+            <td>Starting random noise value</td>
+            <td>Same seed + same prompt = same image. Use to reproduce or iterate on a good result.</td>
+            <td><span class="tag tag-yes">Set manually</span></td>
+          </tr>
+          <tr>
+            <td><strong>CFG Scale</strong></td>
+            <td>Classifier-Free Guidance scale — how strictly to follow the prompt</td>
+            <td>Low (≤4): creative/dreamy. Mid (7-9): balanced. High (≥12): rigid/oversharpened.</td>
+            <td><span class="tag tag-yes">Manual slider</span></td>
+          </tr>
+          <tr>
+            <td><strong>Negative Prompt</strong></td>
+            <td>Words describing what you DON'T want in the image</td>
+            <td>"blurry, deformed hands, watermark" dramatically improves quality</td>
+            <td><span class="tag tag-yes">Manual text</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">💡</span>
+      <div><strong>Key insight:</strong> Stable Diffusion runs denoising in <em>latent space</em> (compressed), while older models like DeepFloyd IF work in <em>pixel space</em> (uncompressed). Latent space makes SD faster and more VRAM-efficient — that's why it runs on consumer hardware and Google Colab's free T4 GPU.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ DATASETS -->
+<section id="datasets">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Section A</div>
+      <div class="section-title">Open Source Image Datasets</div>
+      <div class="section-desc">The data these models were trained on. Knowing the dataset helps you understand a model's strengths and biases.</div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Dataset</th>
+            <th>Type</th>
+            <th>Size</th>
+            <th>Best For</th>
+            <th>License</th>
+            <th>Paper / Link</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>LAION-5B</strong></td>
+            <td>General image-text pairs</td>
+            <td>5.85B image-text pairs</td>
+            <td>Stable Diffusion training base. Biggest open dataset ever.</td>
+            <td><span class="tag tag-free">CC-BY 4.0</span></td>
+            <td><a class="paper-link" href="https://arxiv.org/abs/2210.08402" target="_blank">arxiv:2210.08402 ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>COCO (MS-COCO)</strong></td>
+            <td>Object detection + captions</td>
+            <td>330K images, 1.5M captions</td>
+            <td>Scene understanding, object detection, image captioning benchmarks</td>
+            <td><span class="tag tag-free">CC BY 4.0</span></td>
+            <td><a class="paper-link" href="https://arxiv.org/abs/1405.0312" target="_blank">arxiv:1405.0312 ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>ImageNet</strong></td>
+            <td>Classification</td>
+            <td>1.2M images, 1000 classes</td>
+            <td>Base vision model training; every CNN learned on this. Not for generation.</td>
+            <td><span class="tag tag-warn">Research only</span></td>
+            <td><a class="paper-link" href="https://arxiv.org/abs/1409.0575" target="_blank">arxiv:1409.0575 ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>Open Images V7</strong></td>
+            <td>Multi-label detection</td>
+            <td>9M images, 600 classes</td>
+            <td>Object detection, segmentation. Google's dataset — very clean.</td>
+            <td><span class="tag tag-free">Apache 2.0</span></td>
+            <td><a class="paper-link" href="https://storage.googleapis.com/openimages/web/index.html" target="_blank">Google OI ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>Danbooru</strong></td>
+            <td>Anime artwork + tags</td>
+            <td>~6M images</td>
+            <td>⭐ BEST for anime LoRA training. Extremely detailed tag system.</td>
+            <td><span class="tag tag-warn">Varies per image</span></td>
+            <td><a class="paper-link" href="https://gwern.net/danbooru2021" target="_blank">gwern.net ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>WikiArt</strong></td>
+            <td>Fine art paintings</td>
+            <td>81,444 paintings, 27 styles</td>
+            <td>Painting style transfer, art style LoRA training</td>
+            <td><span class="tag tag-warn">Research only</span></td>
+            <td><a class="paper-link" href="https://arxiv.org/abs/1604.02273" target="_blank">arxiv:1604.02273 ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>CelebA</strong></td>
+            <td>Celebrity faces</td>
+            <td>202,599 face images, 40 attributes</td>
+            <td>Face generation, face attribute editing, GAN training</td>
+            <td><span class="tag tag-free">Non-commercial</span></td>
+            <td><a class="paper-link" href="https://arxiv.org/abs/1411.7766" target="_blank">arxiv:1411.7766 ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>FFHQ</strong></td>
+            <td>High-quality human faces</td>
+            <td>70,000 @ 1024×1024px</td>
+            <td>Realistic human face generation. StyleGAN trained on this.</td>
+            <td><span class="tag tag-free">CC BY-NC-SA 4.0</span></td>
+            <td><a class="paper-link" href="https://arxiv.org/abs/1812.04948" target="_blank">arxiv:1812.04948 ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>Conceptual Captions (CC3M / CC12M)</strong></td>
+            <td>Image-text pairs from web</td>
+            <td>3M / 12M pairs</td>
+            <td>Multimodal learning, CLIP-style training</td>
+            <td><span class="tag tag-free">Open</span></td>
+            <td><a class="paper-link" href="https://arxiv.org/abs/1810.02223" target="_blank">arxiv:1810.02223 ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>Flickr30k</strong></td>
+            <td>Natural photos + 5 captions each</td>
+            <td>31,783 images</td>
+            <td>Image captioning, vision-language model evaluation</td>
+            <td><span class="tag tag-warn">Research only</span></td>
+            <td><a class="paper-link" href="https://arxiv.org/abs/1505.04870" target="_blank">arxiv:1505.04870 ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>DeepFashion</strong></td>
+            <td>Clothing images + attributes</td>
+            <td>800K images, 50 categories</td>
+            <td>Fashion generation, virtual try-on, clothing LoRA</td>
+            <td><span class="tag tag-warn">Non-commercial</span></td>
+            <td><a class="paper-link" href="https://arxiv.org/abs/1603.07056" target="_blank">arxiv:1603.07056 ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>LSUN</strong></td>
+            <td>Scene categories</td>
+            <td>10M+ images, 10 categories</td>
+            <td>Scene generation (bedrooms, churches, kitchens). Early diffusion benchmark.</td>
+            <td><span class="tag tag-free">Open</span></td>
+            <td><a class="paper-link" href="https://arxiv.org/abs/1506.03365" target="_blank">arxiv:1506.03365 ↗</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout callout-warn">
+      <span class="callout-icon">⚠️</span>
+      <div><strong>For your LoRA training on Colab:</strong> Don't try to download LAION-5B (5.85B images = hundreds of TB). Instead use small curated subsets from Hugging Face, or prepare your own 15–50 high-quality images for DreamBooth / LoRA fine-tuning. Danbooru subsets for anime are available pre-packaged on HF.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ MODELS -->
+<section id="models">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Section D</div>
+      <div class="section-title">Image Generation Models</div>
+      <div class="section-desc">The actual models that produce images. Includes architecture type, parameter count, and VRAM requirements.</div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Model</th>
+            <th>Architecture</th>
+            <th>Parameters</th>
+            <th>Native Resolution</th>
+            <th>Min VRAM</th>
+            <th>Open Source</th>
+            <th>Cost</th>
+            <th>Paper / Link</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Stable Diffusion 1.5</strong></td>
+            <td>Latent Diffusion (LDM)</td>
+            <td>860M</td>
+            <td>512×512</td>
+            <td><span class="tag tag-yes">4GB VRAM</span></td>
+            <td><span class="tag tag-open">Open</span></td>
+            <td><span class="tag tag-free">Free</span></td>
+            <td><a class="paper-link" href="https://arxiv.org/abs/2112.10752" target="_blank">arxiv:2112.10752 ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>Stable Diffusion 2.1</strong></td>
+            <td>Latent Diffusion (LDM)</td>
+            <td>983M</td>
+            <td>768×768</td>
+            <td><span class="tag tag-yes">6GB VRAM</span></td>
+            <td><span class="tag tag-open">Open</span></td>
+            <td><span class="tag tag-free">Free</span></td>
+            <td><a class="paper-link" href="https://github.com/Stability-AI/stablediffusion" target="_blank">GitHub ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>SDXL 1.0</strong></td>
+            <td>Latent Diffusion (2×CLIP)</td>
+            <td>3.5B base / 6.6B ensemble</td>
+            <td>1024×1024</td>
+            <td><span class="tag tag-warn">8–10GB VRAM</span></td>
+            <td><span class="tag tag-open">Open</span></td>
+            <td><span class="tag tag-free">Free</span></td>
+            <td><a class="paper-link" href="https://arxiv.org/abs/2307.01952" target="_blank">arxiv:2307.01952 ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>SD 3.5 Large</strong></td>
+            <td>Diffusion Transformer (DiT)</td>
+            <td>8B</td>
+            <td>1024×1024</td>
+            <td><span class="tag tag-no">24GB VRAM</span></td>
+            <td><span class="tag tag-open">Open</span></td>
+            <td><span class="tag tag-free">Free</span></td>
+            <td><a class="paper-link" href="https://stability.ai/news/stable-diffusion-3-5" target="_blank">stability.ai ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>SD 3.5 Medium</strong></td>
+            <td>Diffusion Transformer (DiT)</td>
+            <td>2.5B</td>
+            <td>1024×1024</td>
+            <td><span class="tag tag-warn">10GB VRAM</span></td>
+            <td><span class="tag tag-open">Open</span></td>
+            <td><span class="tag tag-free">Free</span></td>
+            <td><a class="paper-link" href="https://stability.ai/news/stable-diffusion-3-5" target="_blank">stability.ai ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>DALL·E 2</strong></td>
+            <td>Diffusion + CLIP prior</td>
+            <td>~3.5B (est.)</td>
+            <td>1024×1024</td>
+            <td><span class="tag tag-no">Cloud only</span></td>
+            <td><span class="tag tag-closed">Closed</span></td>
+            <td><span class="tag tag-paid">~$0.02/img</span></td>
+            <td><a class="paper-link" href="https://arxiv.org/abs/2204.06125" target="_blank">arxiv:2204.06125 ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>DALL·E 3</strong></td>
+            <td>Diffusion + GPT-4 captions</td>
+            <td>Unknown (closed)</td>
+            <td>1024×1024</td>
+            <td><span class="tag tag-no">Cloud only</span></td>
+            <td><span class="tag tag-closed">Closed</span></td>
+            <td><span class="tag tag-paid">ChatGPT Plus</span></td>
+            <td><a class="paper-link" href="https://cdn.openai.com/papers/dall-e-3.pdf" target="_blank">OpenAI paper ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>Midjourney v6/v7</strong></td>
+            <td>Proprietary diffusion</td>
+            <td>Unknown</td>
+            <td>Up to 4MP</td>
+            <td><span class="tag tag-no">Cloud only</span></td>
+            <td><span class="tag tag-closed">Closed</span></td>
+            <td><span class="tag tag-paid">$10–$120/mo</span></td>
+            <td><a class="paper-link" href="https://www.midjourney.com" target="_blank">midjourney.com ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>Imagen (Google)</strong></td>
+            <td>Cascaded diffusion + T5</td>
+            <td>~2B+</td>
+            <td>1024×1024</td>
+            <td><span class="tag tag-no">Cloud only</span></td>
+            <td><span class="tag tag-closed">Closed</span></td>
+            <td><span class="tag tag-paid">Google Cloud</span></td>
+            <td><a class="paper-link" href="https://arxiv.org/abs/2205.11487" target="_blank">arxiv:2205.11487 ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>Kandinsky 3</strong></td>
+            <td>Latent diffusion + multimodal</td>
+            <td>~3B</td>
+            <td>1024×1024</td>
+            <td><span class="tag tag-warn">12GB VRAM</span></td>
+            <td><span class="tag tag-open">Open</span></td>
+            <td><span class="tag tag-free">Free</span></td>
+            <td><a class="paper-link" href="https://arxiv.org/abs/2310.03502" target="_blank">arxiv:2310.03502 ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>DeepFloyd IF</strong></td>
+            <td>Pixel-space cascaded diffusion</td>
+            <td>4.5B (T5) + 4.3B (UNet) + 1.2B</td>
+            <td>64→256→1024px cascaded</td>
+            <td><span class="tag tag-no">24GB+ total</span></td>
+            <td><span class="tag tag-open">Open</span></td>
+            <td><span class="tag tag-free">Free</span></td>
+            <td><a class="paper-link" href="https://github.com/deep-floyd/IF" target="_blank">GitHub ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>GLIDE</strong></td>
+            <td>Diffusion + CLIP guidance</td>
+            <td>3.5B</td>
+            <td>64→256px</td>
+            <td><span class="tag tag-warn">8GB+</span></td>
+            <td><span class="tag tag-open">Open (filtered)</span></td>
+            <td><span class="tag tag-free">Free</span></td>
+            <td><a class="paper-link" href="https://arxiv.org/abs/2112.10741" target="_blank">arxiv:2112.10741 ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>Parti (Google)</strong></td>
+            <td>Autoregressive transformer (ViT-VQGAN)</td>
+            <td>20B</td>
+            <td>1024×1024</td>
+            <td><span class="tag tag-no">Research only</span></td>
+            <td><span class="tag tag-closed">Closed</span></td>
+            <td><span class="tag tag-no">N/A</span></td>
+            <td><a class="paper-link" href="https://arxiv.org/abs/2206.10789" target="_blank">arxiv:2206.10789 ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>StyleGAN3 (NVIDIA)</strong></td>
+            <td>Generative Adversarial Network</td>
+            <td>~28M</td>
+            <td>Up to 1024×1024</td>
+            <td><span class="tag tag-yes">4GB VRAM</span></td>
+            <td><span class="tag tag-open">Open</span></td>
+            <td><span class="tag tag-free">Free</span></td>
+            <td><a class="paper-link" href="https://arxiv.org/abs/2106.12423" target="_blank">arxiv:2106.12423 ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>FLUX.1 (Black Forest Labs)</strong></td>
+            <td>Diffusion Transformer (DiT)</td>
+            <td>12B</td>
+            <td>Up to 2048px</td>
+            <td><span class="tag tag-no">16–24GB VRAM</span></td>
+            <td><span class="tag tag-open">Open (dev/schnell)</span></td>
+            <td><span class="tag tag-free">Free (schnell)</span></td>
+            <td><a class="paper-link" href="https://blackforestlabs.ai" target="_blank">blackforestlabs.ai ↗</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ COMPARISON -->
+<section id="comparison">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Full Comparison</div>
+      <div class="section-title">Model-by-Model Breakdown</div>
+      <div class="section-desc">The top 5 models you'll actually use — ranked across every dimension that matters for real work.</div>
+    </div>
+
+    <!-- Model size bar chart -->
+    <div class="table-wrap" style="margin-bottom:32px">
+      <table>
+        <thead>
+          <tr>
+            <th>Model</th>
+            <th>Parameter Count (visual)</th>
+            <th>Exact Count</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>FLUX.1</strong></td>
+            <td><div class="bar-wrap"><div class="bar" style="width:280px"></div><span class="bar-label">12B</span></div></td>
+            <td>12,000,000,000</td>
+          </tr>
+          <tr>
+            <td><strong>SD 3.5 Large</strong></td>
+            <td><div class="bar-wrap"><div class="bar" style="width:200px"></div><span class="bar-label">8B</span></div></td>
+            <td>8,000,000,000</td>
+          </tr>
+          <tr>
+            <td><strong>SDXL (ensemble)</strong></td>
+            <td><div class="bar-wrap"><div class="bar" style="width:154px"></div><span class="bar-label">6.6B</span></div></td>
+            <td>6,600,000,000</td>
+          </tr>
+          <tr>
+            <td><strong>SDXL (base only)</strong></td>
+            <td><div class="bar-wrap"><div class="bar" style="width:82px"></div><span class="bar-label">3.5B</span></div></td>
+            <td>3,500,000,000</td>
+          </tr>
+          <tr>
+            <td><strong>SD 2.1</strong></td>
+            <td><div class="bar-wrap"><div class="bar" style="width:23px"></div><span class="bar-label">983M</span></div></td>
+            <td>983,000,000</td>
+          </tr>
+          <tr>
+            <td><strong>SD 1.5</strong></td>
+            <td><div class="bar-wrap"><div class="bar" style="width:20px"></div><span class="bar-label">860M</span></div></td>
+            <td>860,000,000</td>
+          </tr>
+          <tr>
+            <td><strong>StyleGAN3</strong></td>
+            <td><div class="bar-wrap"><div class="bar" style="width:8px; background: linear-gradient(90deg,var(--accent3),var(--accent3))"></div><span class="bar-label">~28M (GAN)</span></div></td>
+            <td>~28,000,000</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Main comparison table -->
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Dimension</th>
+            <th>SD 1.5</th>
+            <th>SDXL</th>
+            <th>SD 3.5</th>
+            <th>DALL·E 3</th>
+            <th>Midjourney v7</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Architecture</strong></td>
+            <td>LDM + UNet</td>
+            <td>LDM + 2×CLIP UNet</td>
+            <td>DiT Transformer</td>
+            <td>Diffusion + GPT-4</td>
+            <td>Proprietary</td>
+          </tr>
+          <tr>
+            <td><strong>Parameters</strong></td>
+            <td>860M</td>
+            <td>3.5B / 6.6B</td>
+            <td>2.5B / 8B</td>
+            <td>Unknown (closed)</td>
+            <td>Unknown (closed)</td>
+          </tr>
+          <tr>
+            <td><strong>Native Res.</strong></td>
+            <td>512×512</td>
+            <td>1024×1024</td>
+            <td>1024×1024</td>
+            <td>1024×1024</td>
+            <td>Up to 4MP</td>
+          </tr>
+          <tr>
+            <td><strong>Min VRAM (local)</strong></td>
+            <td>4GB ✅</td>
+            <td>8–10GB ⚠️</td>
+            <td>10–24GB ⚠️</td>
+            <td>N/A (cloud)</td>
+            <td>N/A (cloud)</td>
+          </tr>
+          <tr>
+            <td><strong>Open Source</strong></td>
+            <td><span class="tag tag-open">Yes</span></td>
+            <td><span class="tag tag-open">Yes</span></td>
+            <td><span class="tag tag-open">Yes</span></td>
+            <td><span class="tag tag-closed">No</span></td>
+            <td><span class="tag tag-closed">No</span></td>
+          </tr>
+          <tr>
+            <td><strong>Cost</strong></td>
+            <td>Free</td>
+            <td>Free</td>
+            <td>Free</td>
+            <td>ChatGPT Plus / API</td>
+            <td>$10–$120/mo</td>
+          </tr>
+          <tr>
+            <td><strong>LoRA support</strong></td>
+            <td><span class="tag tag-yes">Excellent</span></td>
+            <td><span class="tag tag-yes">Good</span></td>
+            <td><span class="tag tag-warn">Growing</span></td>
+            <td><span class="tag tag-no">No</span></td>
+            <td><span class="tag tag-no">No</span></td>
+          </tr>
+          <tr>
+            <td><strong>ControlNet support</strong></td>
+            <td><span class="tag tag-yes">Best</span></td>
+            <td><span class="tag tag-yes">Good</span></td>
+            <td><span class="tag tag-warn">Limited</span></td>
+            <td><span class="tag tag-no">No</span></td>
+            <td><span class="tag tag-no">No</span></td>
+          </tr>
+          <tr>
+            <td><strong>Prompt adherence</strong></td>
+            <td>Medium</td>
+            <td>Good</td>
+            <td>Very good</td>
+            <td>Excellent</td>
+            <td>Good</td>
+          </tr>
+          <tr>
+            <td><strong>Artistic quality</strong></td>
+            <td>Good (huge model zoo)</td>
+            <td>Very good</td>
+            <td>Very good</td>
+            <td>Good</td>
+            <td>⭐ Best (cinematic)</td>
+          </tr>
+          <tr>
+            <td><strong>Realistic faces</strong></td>
+            <td>Medium</td>
+            <td>Good</td>
+            <td>Good</td>
+            <td>Very good</td>
+            <td>Very good</td>
+          </tr>
+          <tr>
+            <td><strong>Text in images</strong></td>
+            <td>Poor</td>
+            <td>Fair</td>
+            <td>Good</td>
+            <td>Very good</td>
+            <td>Fair</td>
+          </tr>
+          <tr>
+            <td><strong>Hands quality</strong></td>
+            <td>Poor</td>
+            <td>Fair</td>
+            <td>Good</td>
+            <td>Good</td>
+            <td>Good</td>
+          </tr>
+          <tr>
+            <td><strong>Speed (local)</strong></td>
+            <td>Fast (20–40 steps)</td>
+            <td>Medium</td>
+            <td>Medium</td>
+            <td>~10–20s (cloud)</td>
+            <td>~30–60s (cloud)</td>
+          </tr>
+          <tr>
+            <td><strong>Ecosystem size</strong></td>
+            <td>⭐ Massive</td>
+            <td>Large</td>
+            <td>Growing</td>
+            <td>Small</td>
+            <td>Closed</td>
+          </tr>
+          <tr>
+            <td><strong>Runs on Colab free?</strong></td>
+            <td><span class="tag tag-yes">Yes (T4 fine)</span></td>
+            <td><span class="tag tag-warn">Tight but ok</span></td>
+            <td><span class="tag tag-warn">Medium only</span></td>
+            <td><span class="tag tag-no">API only</span></td>
+            <td><span class="tag tag-no">API only</span></td>
+          </tr>
+          <tr>
+            <td><strong>Best use case</strong></td>
+            <td>Learning, LoRA, huge model zoo</td>
+            <td>Production quality, fine-tuning</td>
+            <td>Highest local quality (with GPU)</td>
+            <td>Complex prompts, text in images</td>
+            <td>Art direction, cinematic quality</td>
+          </tr>
+          <tr>
+            <td><strong>Commercial use</strong></td>
+            <td><span class="tag tag-warn">CreativeML OpenRAIL</span></td>
+            <td><span class="tag tag-warn">CreativeML OpenRAIL</span></td>
+            <td><span class="tag tag-warn">SAI Community License</span></td>
+            <td><span class="tag tag-yes">Yes (with subscription)</span></td>
+            <td><span class="tag tag-yes">Yes (paid plans)</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-ok">
+      <span class="callout-icon">🎯</span>
+      <div><strong>Recommended for your learning path (Free Colab):</strong> Start with <strong>SD 1.5</strong> — smallest VRAM, biggest ecosystem, thousands of LoRAs on CivitAI, runs perfectly on T4. Move to <strong>SDXL</strong> when you want better quality. Try <strong>SD 3.5 Medium</strong> for latest results. Use DALL·E 3 or Midjourney only if you want zero-setup cloud tools.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ FINE-TUNING -->
+<section id="finetuning">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Section B</div>
+      <div class="section-title">Fine-tuning & Adaptation Methods</div>
+      <div class="section-desc">Ways to teach a model new concepts, styles, or subjects without training from scratch.</div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Method</th>
+            <th>What it does</th>
+            <th>Training Data</th>
+            <th>VRAM needed</th>
+            <th>Output size</th>
+            <th>Colab Free?</th>
+            <th>Paper</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>LoRA</strong><br><span style="color:var(--muted);font-size:12px">Low-Rank Adaptation</span></td>
+            <td>Adds small trainable matrices alongside frozen model weights. Learns style/character delta.</td>
+            <td>15–100 images</td>
+            <td><span class="tag tag-yes">8–12GB</span></td>
+            <td>~50MB–500MB</td>
+            <td><span class="tag tag-yes">Yes ✅</span></td>
+            <td><a class="paper-link" href="https://arxiv.org/abs/2106.09685" target="_blank">arxiv:2106.09685 ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>DreamBooth</strong></td>
+            <td>Fine-tunes the entire model on a specific subject using a rare token. Very strong subject fidelity.</td>
+            <td>3–30 images</td>
+            <td><span class="tag tag-warn">16–24GB</span></td>
+            <td>Full model (~4GB+)</td>
+            <td><span class="tag tag-warn">Tight</span></td>
+            <td><a class="paper-link" href="https://arxiv.org/abs/2208.12242" target="_blank">arxiv:2208.12242 ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>Textual Inversion</strong></td>
+            <td>Learns a new word embedding (token) that represents a style or object. Doesn't change model weights.</td>
+            <td>3–10 images</td>
+            <td><span class="tag tag-yes">6–8GB</span></td>
+            <td>~5–10KB</td>
+            <td><span class="tag tag-yes">Yes ✅</span></td>
+            <td><a class="paper-link" href="https://arxiv.org/abs/2208.01618" target="_blank">arxiv:2208.01618 ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>ControlNet</strong></td>
+            <td>Adds spatial conditioning (pose, edge, depth, segmentation) to control image layout precisely.</td>
+            <td>Large dataset (pre-trained)</td>
+            <td><span class="tag tag-warn">8–12GB</span></td>
+            <td>~1GB per module</td>
+            <td><span class="tag tag-yes">Yes (inference)</span></td>
+            <td><a class="paper-link" href="https://arxiv.org/abs/2302.05543" target="_blank">arxiv:2302.05543 ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>HyperNetworks</strong></td>
+            <td>A small secondary network that generates weight modifications for the main model in real-time.</td>
+            <td>100–1000 images</td>
+            <td><span class="tag tag-warn">12GB+</span></td>
+            <td>~100MB</td>
+            <td><span class="tag tag-warn">Possibly</span></td>
+            <td><a class="paper-link" href="https://arxiv.org/abs/1609.09106" target="_blank">arxiv:1609.09106 ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>Full Fine-tuning</strong></td>
+            <td>Retrains all model weights. Maximum capability but expensive and needs huge data.</td>
+            <td>10K–millions of images</td>
+            <td><span class="tag tag-no">40GB+ (A100)</span></td>
+            <td>Full model (~4–12GB)</td>
+            <td><span class="tag tag-no">No ❌</span></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td><strong>Adapters</strong></td>
+            <td>Adds small bottleneck layers between frozen transformer blocks. Like LoRA but separate modules.</td>
+            <td>100–10K images</td>
+            <td><span class="tag tag-warn">8–16GB</span></td>
+            <td>~10–100MB</td>
+            <td><span class="tag tag-warn">Possibly</span></td>
+            <td><a class="paper-link" href="https://arxiv.org/abs/1902.00751" target="_blank">arxiv:1902.00751 ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>IP-Adapter</strong></td>
+            <td>Image-based conditioning — use a reference image to guide the style of generation.</td>
+            <td>Pre-trained (use off-shelf)</td>
+            <td><span class="tag tag-yes">8–10GB</span></td>
+            <td>~150MB</td>
+            <td><span class="tag tag-yes">Yes ✅</span></td>
+            <td><a class="paper-link" href="https://arxiv.org/abs/2308.06721" target="_blank">arxiv:2308.06721 ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>Prefix Tuning</strong></td>
+            <td>Prepends trainable "virtual tokens" to the transformer input. NLP-origin but used in vision-language.</td>
+            <td>Medium</td>
+            <td><span class="tag tag-yes">Low</span></td>
+            <td>Very small</td>
+            <td><span class="tag tag-yes">Yes</span></td>
+            <td><a class="paper-link" href="https://arxiv.org/abs/2101.00190" target="_blank">arxiv:2101.00190 ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>P-Tuning</strong></td>
+            <td>Uses a small trainable MLP to generate prompt embeddings rather than discrete tokens.</td>
+            <td>Small–Medium</td>
+            <td><span class="tag tag-yes">Low</span></td>
+            <td>Very small</td>
+            <td><span class="tag tag-yes">Yes</span></td>
+            <td><a class="paper-link" href="https://arxiv.org/abs/2103.10385" target="_blank">arxiv:2103.10385 ↗</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">🎓</span>
+      <div><strong>For anime style on Google Colab (Free T4):</strong> <strong>LoRA is your best friend.</strong> Train with 15–30 Danbooru images using <code>kohya_ss</code> or <code>Diffusers</code> trainer. Keep batch size=1, gradient accumulation=4, rank=16 or 32. Training takes ~30–60 min on T4. Use <strong>Textual Inversion</strong> if you want an even smaller output file.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ PROMPTING -->
+<section id="prompting">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Section C</div>
+      <div class="section-title">Prompt Frameworks</div>
+      <div class="section-desc">These are ways to communicate with AI models — not models themselves. Master these and your outputs improve dramatically.</div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Framework</th>
+            <th>Full Name / Meaning</th>
+            <th>Best For</th>
+            <th>Works With</th>
+            <th>Example</th>
+            <th>Learn More</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>CO-STAR</strong></td>
+            <td>Context, Objective, Style, Tone, Audience, Response</td>
+            <td>Structured LLM prompts for consistent, professional outputs</td>
+            <td>ChatGPT, Claude, Gemini</td>
+            <td>"Context: I'm a developer. Objective: Write docs. Style: Technical..."</td>
+            <td><a class="paper-link" href="https://arxiv.org/abs/2312.16171" target="_blank">Paper ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>Chain-of-Thought</strong></td>
+            <td>Step-by-step reasoning before answering</td>
+            <td>Math, logic, complex reasoning tasks</td>
+            <td>All LLMs, especially GPT-4/Claude</td>
+            <td>"Let's think step by step: First..."</td>
+            <td><a class="paper-link" href="https://arxiv.org/abs/2201.11903" target="_blank">arxiv:2201.11903 ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>ReAct</strong></td>
+            <td>Reasoning + Acting (with tools)</td>
+            <td>AI agents that search the web, use APIs, take actions</td>
+            <td>GPT-4, Claude with tool use</td>
+            <td>"Think: what do I need? Search: X. Observe: result. Act: next step."</td>
+            <td><a class="paper-link" href="https://arxiv.org/abs/2210.03629" target="_blank">arxiv:2210.03629 ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>Few-Shot Prompting</strong></td>
+            <td>Give examples before your actual request</td>
+            <td>Classification, data extraction, formatting tasks</td>
+            <td>All LLMs and image models</td>
+            <td>"Example 1: [input] → [output]. Example 2: ... Now do: [your task]"</td>
+            <td><a class="paper-link" href="https://arxiv.org/abs/2005.14165" target="_blank">arxiv:2005.14165 ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>Zero-Shot Prompting</strong></td>
+            <td>Direct instruction, no examples needed</td>
+            <td>General tasks where the model already knows the domain</td>
+            <td>All LLMs</td>
+            <td>"Translate this to French: Hello world."</td>
+            <td><a class="paper-link" href="https://arxiv.org/abs/2109.01652" target="_blank">arxiv:2109.01652 ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>Role Prompting</strong></td>
+            <td>Assign a persona or expert role to the model</td>
+            <td>Domain-specific expertise, creative writing styles</td>
+            <td>All LLMs, Midjourney style refs</td>
+            <td>"You are an expert cardiologist. Explain..."</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td><strong>Instruction Tuning</strong></td>
+            <td>Training technique where models are fine-tuned to follow instructions</td>
+            <td>Building instruction-following models (not a user prompt trick — it's training)</td>
+            <td>Training pipeline</td>
+            <td>Used to create InstructGPT, LLaMA-Instruct, etc.</td>
+            <td><a class="paper-link" href="https://arxiv.org/abs/2203.02155" target="_blank">arxiv:2203.02155 ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>Prompt Templates</strong></td>
+            <td>Fixed reusable prompt structures with variable slots</td>
+            <td>Production pipelines, repeatable tasks</td>
+            <td>All models</td>
+            <td>"Photo of {subject} in {setting}, {style}, {lighting}"</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td><strong>Tree-of-Thought</strong></td>
+            <td>Explore multiple reasoning branches simultaneously, backtrack if needed</td>
+            <td>Complex planning, creative writing, strategic tasks</td>
+            <td>GPT-4, Claude 3+</td>
+            <td>Explore 3 approaches → pick best → continue down that branch</td>
+            <td><a class="paper-link" href="https://arxiv.org/abs/2305.10601" target="_blank">arxiv:2305.10601 ↗</a></td>
+          </tr>
+          <tr>
+            <td><strong>Self-Consistency</strong></td>
+            <td>Generate multiple answers, take the majority/best vote</td>
+            <td>Reducing hallucinations, increasing accuracy</td>
+            <td>Any LLM (sample temp &gt;0)</td>
+            <td>Ask 5 times → pick most common answer</td>
+            <td><a class="paper-link" href="https://arxiv.org/abs/2203.11171" target="_blank">arxiv:2203.11171 ↗</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">🖼️</span>
+      <div><strong>For image generation specifically:</strong> Your "prompt framework" is: <code>[subject] + [style] + [lighting] + [camera/lens] + [quality tags] + [negative prompt]</code>. Example: <em>"1girl, long dark hair, anime style, soft studio lighting, 8K, masterpiece, detailed | negative: blurry, deformed hands, watermark"</em></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ CONCEPTS -->
+<section id="concepts">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Section E — Must Know</div>
+      <div class="section-title">Core Concepts Explained</div>
+      <div class="section-desc">The building blocks everyone assumes you know. Don't skip these — they unlock everything else.</div>
+    </div>
+    <div class="concept-grid">
+      <div class="concept-card">
+        <div class="icon">🌊</div>
+        <h4>Diffusion Process</h4>
+        <p>Training: take a real image, add Gaussian noise over T steps until it's pure static. Inference: start from pure noise, remove noise step-by-step guided by your prompt until an image emerges.</p>
+      </div>
+      <div class="concept-card">
+        <div class="icon">📦</div>
+        <h4>Latent Space</h4>
+        <p>A compressed mathematical representation of images. VAE compresses 512×512 pixels → 64×64 latent tensors (8× smaller). All denoising happens here — making SD much faster than pixel-space models.</p>
+      </div>
+      <div class="concept-card">
+        <div class="icon">🔗</div>
+        <h4>Cross-Attention</h4>
+        <p>The mechanism that links your text embedding to the image being generated. Each UNet block asks "which parts of my text description are relevant to these image regions?" LoRA primarily modifies these layers.</p>
+      </div>
+      <div class="concept-card">
+        <div class="icon">🔤</div>
+        <h4>CLIP</h4>
+        <p>Contrastive Language-Image Pretraining by OpenAI. Learns to align text and image in shared embedding space. SD 1.5 uses ViT-L/14 CLIP. SDXL uses both OpenCLIP-ViT/G AND CLIP-ViT/L for better understanding.</p>
+      </div>
+      <div class="concept-card">
+        <div class="icon">🕸️</div>
+        <h4>UNet</h4>
+        <p>U-shaped neural network with encoder-decoder architecture + skip connections. The main workhorse of SD — repeatedly predicts and removes noise from the latent image. Contains the cross-attention layers LoRA modifies.</p>
+      </div>
+      <div class="concept-card">
+        <div class="icon">🗜️</div>
+        <h4>VAE</h4>
+        <p>Variational Autoencoder. Encodes real images into latent space for training/img2img, decodes latents back to pixels at the end. A better VAE = crisper final images. The SDXL VAE is improved over SD 1.5.</p>
+      </div>
+      <div class="concept-card">
+        <div class="icon">🎲</div>
+        <h4>Sampler / Scheduler</h4>
+        <p>Controls the math of how noise is removed at each step. Popular: DDIM (fast, deterministic), Euler (simple), DPM++ 2M Karras (quality+speed balance), DDPM (original). Fewer steps = faster but lower quality.</p>
+      </div>
+      <div class="concept-card">
+        <div class="icon">🌱</div>
+        <h4>Seed</h4>
+        <p>The random number that initializes the noise pattern. Same seed + same prompt + same settings = identical image every time. Use a fixed seed to iterate on composition while changing other settings.</p>
+      </div>
+      <div class="concept-card">
+        <div class="icon">📏</div>
+        <h4>CFG Scale (Guidance)</h4>
+        <p>Classifier-Free Guidance. Ranges 1–20+. Low (1–5): creative, may ignore prompt. Medium (7–9): balanced. High (12+): over-saturated, rigid. Start at 7 and adjust. SDXL works better at lower CFG than SD 1.5.</p>
+      </div>
+      <div class="concept-card">
+        <div class="icon">🚫</div>
+        <h4>Negative Prompt</h4>
+        <p>Words that push the generation away from unwanted content. Classic starter: <em>"blurry, deformed, ugly, bad anatomy, extra limbs, watermark, signature, text, cropped"</em>. Very effective in SD 1.5 and SDXL.</p>
+      </div>
+      <div class="concept-card">
+        <div class="icon">🔀</div>
+        <h4>LoRA Rank</h4>
+        <p>Rank (r) controls LoRA expressiveness. Rank=4 is tiny. Rank=128 is large. Higher rank = more learning capacity but larger file + possible overfitting. Rank 16–32 is sweet spot for most styles.</p>
+      </div>
+      <div class="concept-card">
+        <div class="icon">📐</div>
+        <h4>Attention Slicing</h4>
+        <p>Memory optimization: process attention in chunks instead of all at once. Reduces VRAM usage by ~30% at the cost of slightly slower generation. Essential for running SDXL on Colab's free T4 GPU.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ COLAB -->
+<section id="colab">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">☁️ Google Colab Free Tier</div>
+      <div class="section-title">Running Models on Colab</div>
+      <div class="section-desc">Everything you need to know about Colab's free tier and which models fit inside it.</div>
+    </div>
+
+    <!-- Specs -->
+    <div class="table-wrap" style="margin-bottom:24px">
+      <table>
+        <thead>
+          <tr>
+            <th>Resource</th>
+            <th>Free Tier (T4 GPU)</th>
+            <th>Colab Pro ($9.99/mo)</th>
+            <th>Colab Pro+ (~$49/mo)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>GPU</strong></td>
+            <td>NVIDIA T4 (Turing, 2018)</td>
+            <td>T4 / V100</td>
+            <td>A100 (40/80GB)</td>
+          </tr>
+          <tr>
+            <td><strong>VRAM</strong></td>
+            <td>~15GB</td>
+            <td>15–32GB</td>
+            <td>40–80GB</td>
+          </tr>
+          <tr>
+            <td><strong>System RAM</strong></td>
+            <td>~12.7GB</td>
+            <td>~25GB</td>
+            <td>~51GB+</td>
+          </tr>
+          <tr>
+            <td><strong>Disk</strong></td>
+            <td>~78GB</td>
+            <td>~166GB</td>
+            <td>~225GB+</td>
+          </tr>
+          <tr>
+            <td><strong>Session limit</strong></td>
+            <td>~1–3 hours (varies)</td>
+            <td>Longer sessions</td>
+            <td>Background execution</td>
+          </tr>
+          <tr>
+            <td><strong>Idle timeout</strong></td>
+            <td>~90 min</td>
+            <td>~2.5 hours</td>
+            <td>Longer</td>
+          </tr>
+          <tr>
+            <td><strong>Persistent storage</strong></td>
+            <td>Use Google Drive (15GB free)</td>
+            <td>Google Drive</td>
+            <td>Google Drive</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- What can run -->
+    <div class="table-wrap" style="margin-bottom:24px">
+      <table>
+        <thead>
+          <tr>
+            <th>Model / Task</th>
+            <th>Fits on T4 (15GB VRAM)?</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>SD 1.5 inference</strong></td>
+            <td><span class="tag tag-yes">✅ Easily</span></td>
+            <td>~4GB VRAM used. Very fast generation.</td>
+          </tr>
+          <tr>
+            <td><strong>SDXL inference</strong></td>
+            <td><span class="tag tag-warn">⚠️ Tight</span></td>
+            <td>~10-12GB. Enable attention slicing + half precision (fp16).</td>
+          </tr>
+          <tr>
+            <td><strong>SD 3.5 Medium inference</strong></td>
+            <td><span class="tag tag-warn">⚠️ Possible</span></td>
+            <td>~10GB with quantization. May OOM without tricks.</td>
+          </tr>
+          <tr>
+            <td><strong>SD 3.5 Large inference</strong></td>
+            <td><span class="tag tag-no">❌ Too large</span></td>
+            <td>Needs ~24GB VRAM. Use Pro+ (A100) instead.</td>
+          </tr>
+          <tr>
+            <td><strong>DeepFloyd IF</strong></td>
+            <td><span class="tag tag-warn">⚠️ With tricks</span></td>
+            <td>Needs 8-bit quantization + model offloading. See HuggingFace guide.</td>
+          </tr>
+          <tr>
+            <td><strong>LoRA training (SD 1.5)</strong></td>
+            <td><span class="tag tag-yes">✅ Yes</span></td>
+            <td>Batch size=1, grad accum=4–8. ~30–60 min for 1500 steps.</td>
+          </tr>
+          <tr>
+            <td><strong>LoRA training (SDXL)</strong></td>
+            <td><span class="tag tag-warn">⚠️ Tight</span></td>
+            <td>Use gradient checkpointing, 8-bit Adam optimizer.</td>
+          </tr>
+          <tr>
+            <td><strong>DreamBooth training</strong></td>
+            <td><span class="tag tag-warn">⚠️ Barely</span></td>
+            <td>Very tight. Session may timeout before training completes.</td>
+          </tr>
+          <tr>
+            <td><strong>ComfyUI</strong></td>
+            <td><span class="tag tag-yes">✅ Yes</span></td>
+            <td>Works with SD 1.5 and SDXL. Use Pinggy for browser access.</td>
+          </tr>
+          <tr>
+            <td><strong>AUTOMATIC1111</strong></td>
+            <td><span class="tag tag-warn">⚠️ Risky</span></td>
+            <td>High RAM usage may cause disconnects or account warnings.</td>
+          </tr>
+          <tr>
+            <td><strong>Full fine-tuning</strong></td>
+            <td><span class="tag tag-no">❌ No</span></td>
+            <td>Needs A100+ and long sessions. Not for free tier.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Tips grid -->
+    <div class="colab-grid">
+      <div class="colab-card">
+        <div class="colab-card-icon">💾</div>
+        <div class="card-tag"><span class="tag tag-yes">Essential</span></div>
+        <h4>Mount Google Drive first</h4>
+        <p>Save models and outputs to Drive so you don't lose them when the session resets. Use <code>drive.mount('/content/drive')</code> at the start of every notebook.</p>
+      </div>
+      <div class="colab-card">
+        <div class="colab-card-icon">⚡</div>
+        <div class="card-tag"><span class="tag tag-yes">Must do</span></div>
+        <h4>Always enable GPU Runtime</h4>
+        <p>Runtime → Change runtime type → Hardware accelerator → GPU (T4). Without this, SD takes hours instead of seconds. Don't forget to do this every session.</p>
+      </div>
+      <div class="colab-card">
+        <div class="colab-card-icon">🔧</div>
+        <div class="card-tag"><span class="tag tag-warn">VRAM tip</span></div>
+        <h4>Use fp16 and attention slicing</h4>
+        <p>Always load models with <code>torch_dtype=torch.float16</code>. Call <code>pipe.enable_attention_slicing()</code>. This halves VRAM and lets SDXL run on the T4.</p>
+      </div>
+      <div class="colab-card">
+        <div class="colab-card-icon">🕐</div>
+        <div class="card-tag"><span class="tag tag-warn">Time limit</span></div>
+        <h4>Sessions reset every ~1–3 hours</h4>
+        <p>Free Colab disconnects after ~1 hour idle or 3–12 hours active. Download your outputs to Drive frequently. Don't rely on Colab disk for long LoRA training runs.</p>
+      </div>
+      <div class="colab-card">
+        <div class="colab-card-icon">📥</div>
+        <div class="card-tag"><span class="tag tag-open">HuggingFace</span></div>
+        <h4>Download models from HuggingFace</h4>
+        <p>Use <code>from diffusers import StableDiffusionPipeline</code> and pass the HF model ID. Models cache in <code>/root/.cache</code> — link this to Drive to avoid re-downloading each session.</p>
+      </div>
+      <div class="colab-card">
+        <div class="colab-card-icon">🎯</div>
+        <div class="card-tag"><span class="tag tag-yes">Start here</span></div>
+        <h4>Best starter combo</h4>
+        <p><strong>SD 1.5 + Diffusers library</strong> on free T4. Then try <strong>SDXL with fp16</strong>. For LoRA training: use <strong>kohya_ss</strong> notebook with SD 1.5. For UI: <strong>ComfyUI + Pinggy</strong> tunnel.</p>
+      </div>
+      <div class="colab-card">
+        <div class="colab-card-icon">⚠️</div>
+        <div class="card-tag"><span class="tag tag-warn">Warning</span></div>
+        <h4>Don't abuse the free tier</h4>
+        <p>Google may throttle GPU access if you use Colab heavily over multiple days. They prioritize users who haven't used GPU recently. If denied GPU, wait a day or use CPU for setup steps.</p>
+      </div>
+      <div class="colab-card">
+        <div class="colab-card-icon">🧪</div>
+        <div class="card-tag"><span class="tag tag-open">For training</span></div>
+        <h4>LoRA training tips for T4</h4>
+        <p>Resolution: 512 (SD1.5) or 768 (SDXL). Batch size: 1. Grad accumulation: 4–8. Steps: 1000–2000. Use 8-bit Adam optimizer (<code>use_8bit_adam=True</code>). Enable gradient checkpointing.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUICK REFERENCE -->
+<section style="padding:48px 0; background: var(--surface);">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Quick Reference</div>
+      <div class="section-title">Useful Resources & Links</div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Resource</th><th>What</th><th>Link</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>HuggingFace Hub</strong></td><td>Download models, datasets, LoRAs for free</td><td><a class="paper-link" href="https://huggingface.co" target="_blank">huggingface.co ↗</a></td></tr>
+          <tr><td><strong>CivitAI</strong></td><td>Massive library of community LoRAs, checkpoints, embeddings</td><td><a class="paper-link" href="https://civitai.com" target="_blank">civitai.com ↗</a></td></tr>
+          <tr><td><strong>Diffusers Library</strong></td><td>HuggingFace's Python library — the easiest way to run SD models</td><td><a class="paper-link" href="https://huggingface.co/docs/diffusers" target="_blank">HF Diffusers docs ↗</a></td></tr>
+          <tr><td><strong>kohya_ss</strong></td><td>The go-to LoRA/DreamBooth training tool with Colab notebooks</td><td><a class="paper-link" href="https://github.com/bmaltais/kohya_ss" target="_blank">GitHub ↗</a></td></tr>
+          <tr><td><strong>ComfyUI</strong></td><td>Node-based workflow UI for SD — very powerful and Colab-compatible</td><td><a class="paper-link" href="https://github.com/comfyanonymous/ComfyUI" target="_blank">GitHub ↗</a></td></tr>
+          <tr><td><strong>Original LDM paper</strong></td><td>The paper that introduced Stable Diffusion's architecture</td><td><a class="paper-link" href="https://arxiv.org/abs/2112.10752" target="_blank">arxiv:2112.10752 ↗</a></td></tr>
+          <tr><td><strong>CLIP paper</strong></td><td>How CLIP connects text and images</td><td><a class="paper-link" href="https://arxiv.org/abs/2103.00020" target="_blank">arxiv:2103.00020 ↗</a></td></tr>
+          <tr><td><strong>DDPM paper</strong></td><td>Original diffusion model paper by Ho et al.</td><td><a class="paper-link" href="https://arxiv.org/abs/2006.11239" target="_blank">arxiv:2006.11239 ↗</a></td></tr>
+          <tr><td><strong>Prompt Hero</strong></td><td>Prompt inspiration with model tags</td><td><a class="paper-link" href="https://prompthero.com" target="_blank">prompthero.com ↗</a></td></tr>
+          <tr><td><strong>ControlNet guide</strong></td><td>Learn to use pose/depth/edge control</td><td><a class="paper-link" href="https://arxiv.org/abs/2302.05543" target="_blank">arxiv:2302.05543 ↗</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div>Built for deep learning of AI image generation · Data sourced from ArXiv, HuggingFace, Stability AI docs, and community benchmarks · 2025</div>
+  <div style="margin-top:8px; color:var(--border)">SD 1.5 · SDXL · SD 3.5 · DALL·E · Midjourney · FLUX · LoRA · DreamBooth · ControlNet · Google Colab T4</div>
+</footer>
+
+<a href="#" class="back-top">↑</a>
+
+</body>
+</html>
