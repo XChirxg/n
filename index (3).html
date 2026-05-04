@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VibeStory — Image Tester</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #0d0f14;
+    --surface: #161921;
+    --surface2: #1e2330;
+    --border: #2a3045;
+    --accent: #7c6af7;
+    --accent2: #f7a26a;
+    --text: #e8eaf0;
+    --muted: #6b7394;
+    --green: #4caf8f;
+    --red: #f76a6a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    padding: 32px 20px;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .header p {
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-top: 6px;
+  }
+
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+  }
+
+  .step-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+
+  .card h2 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 14px;
+    color: var(--text);
+  }
+
+  input[type="text"], textarea {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    padding: 12px 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    resize: vertical;
+  }
+  input[type="text"]:focus, textarea:focus {
+    border-color: var(--accent);
+  }
+
+  .input-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .input-row input {
+    flex: 1;
+  }
+
+  button {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 11px 20px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    white-space: nowrap;
+  }
+  button:hover { background: #6857e8; }
+  button:active { transform: scale(0.97); }
+  button:disabled { background: var(--muted); cursor: not-allowed; transform: none; }
+
+  .btn-secondary {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  .btn-secondary:hover { background: var(--border); }
+
+  .btn-green {
+    background: var(--green);
+  }
+  .btn-green:hover { background: #3d9a7a; }
+
+  .status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--muted);
+    margin-right: 8px;
+  }
+  .status-dot.connected { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .status-dot.error { background: var(--red); }
+
+  .status-bar {
+    display: flex;
+    align-items: center;
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 10px;
+  }
+
+  .hint {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-top: 8px;
+    line-height: 1.6;
+  }
+
+  .json-editor-area {
+    font-size: 0.78rem;
+    min-height: 220px;
+    line-height: 1.6;
+  }
+
+  .parts-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .part-row {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+  }
+  .part-row label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent2);
+    margin-bottom: 6px;
+  }
+  .part-story-text {
+    font-size: 0.83rem;
+    color: var(--muted);
+    margin-bottom: 10px;
+    line-height: 1.5;
+    font-style: italic;
+  }
+  .part-row textarea {
+    min-height: 70px;
+    font-size: 0.78rem;
+  }
+
+  .settings-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .setting-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 120px;
+  }
+  .setting-group label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+  }
+  .setting-group input[type="number"] {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    padding: 8px 10px;
+    outline: none;
+  }
+
+  #generate-btn {
+    font-size: 1rem;
+    padding: 14px 32px;
+    width: 100%;
+    letter-spacing: 0.5px;
+  }
+
+  .progress-section {
+    display: none;
+  }
+  .progress-section.active {
+    display: block;
+  }
+  .progress-bar-wrap {
+    background: var(--surface2);
+    border-radius: 99px;
+    height: 6px;
+    overflow: hidden;
+    margin: 12px 0;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 99px;
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+  .progress-text {
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .results-section {
+    display: none;
+  }
+  .results-section.active {
+    display: block;
+  }
+  .results-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .result-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    animation: fadeUp 0.4s ease forwards;
+    opacity: 0;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .result-card img {
+    width: 100%;
+    max-width: 512px;
+    display: block;
+    margin: 0 auto;
+  }
+  .result-meta {
+    padding: 14px 16px;
+  }
+  .result-part-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent2);
+    margin-bottom: 6px;
+  }
+  .result-story-text {
+    font-size: 0.88rem;
+    color: var(--text);
+    margin-bottom: 10px;
+    line-height: 1.55;
+  }
+  .result-prompt-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .result-prompt {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--accent);
+    background: var(--surface);
+    border-radius: 6px;
+    padding: 8px 10px;
+    line-height: 1.5;
+    word-break: break-word;
+  }
+
+  .tab-row {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 14px;
+  }
+  .tab {
+    padding: 7px 16px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    transition: all 0.15s;
+  }
+  .tab.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .error-msg {
+    background: rgba(247, 106, 106, 0.12);
+    border: 1px solid rgba(247, 106, 106, 0.3);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.82rem;
+    color: var(--red);
+    margin-top: 10px;
+    display: none;
+  }
+  .error-msg.show { display: block; }
+
+  .json-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+
+  .part-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .part-actions button {
+    padding: 7px 14px;
+    font-size: 0.78rem;
+  }
+
+  #clear-results-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.78rem;
+    padding: 7px 14px;
+    margin-top: 12px;
+  }
+  #clear-results-btn:hover { color: var(--text); border-color: var(--muted); background: transparent; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🎨 VibeStory Image Tester</h1>
+  <p>Paste story JSON → edit prompts → generate images → iterate</p>
+</div>
+
+<div class="container">
+
+  <!-- STEP 1: Connect -->
+  <div class="card" id="step-connect">
+    <div class="step-label">Step 1</div>
+    <h2>Connect to Colab</h2>
+    <div class="input-row">
+      <input type="text" id="ngrok-url" placeholder="https://xxxx-xx-xx.ngrok-free.app" />
+      <button onclick="connectNgrok()">Connect</button>
+    </div>
+    <div class="status-bar">
+      <span class="status-dot" id="status-dot"></span>
+      <span id="status-text">Not connected</span>
+    </div>
+    <div class="error-msg" id="connect-error"></div>
+    <p class="hint">Paste your ngrok URL above (from Cell 7 of the original notebook). The URL must be <strong>https://</strong>.</p>
+  </div>
+
+  <!-- STEP 2: Paste JSON -->
+  <div class="card" id="step-paste">
+    <div class="step-label">Step 2</div>
+    <h2>Paste Story JSON</h2>
+    <p class="hint" style="margin-bottom:12px;">
+      Send the text below to any LLM (ChatGPT, Claude, Gemini...) and paste the JSON response back here.<br><br>
+      <strong>Prompt to send to the LLM:</strong>
+    </p>
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;font-family:'JetBrains Mono',monospace;font-size:0.75rem;line-height:1.6;color:var(--accent2);margin-bottom:14px;" id="llm-prompt-box">
+      You are a Stable Diffusion prompt engineer. Given this story, split it into 5 parts and for each part write a detailed image generation prompt. Output ONLY valid JSON, no markdown, no extra text.<br><br>
+      Story: [PASTE YOUR STORY HERE]<br><br>
+      Format:<br>
+      {<br>
+      &nbsp;&nbsp;"parts": [<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;{"part_index": 0, "text": "story sentence...", "prompt": "studio ghibli anime style, ..."},<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;{"part_index": 1, "text": "story sentence...", "prompt": "studio ghibli anime style, ..."},<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;...<br>
+      &nbsp;&nbsp;]<br>
+      }
+    </div>
+    <button class="btn-secondary" onclick="copyLLMPrompt()" style="margin-bottom:16px;font-size:0.8rem;padding:8px 16px;">📋 Copy LLM Prompt</button>
+    <br>
+    <div class="tab-row">
+      <div class="tab active" onclick="switchTab('json')">Paste JSON</div>
+      <div class="tab" onclick="switchTab('parts')">Edit Parts</div>
+    </div>
+    <div class="tab-content active" id="tab-json">
+      <textarea class="json-editor-area" id="json-input" placeholder='Paste the LLM JSON response here...'></textarea>
+      <div class="json-actions">
+        <button onclick="parseJSON()">Parse JSON →</button>
+        <button class="btn-secondary" onclick="loadExample()">Load Example</button>
+        <button class="btn-secondary" onclick="clearJSON()">Clear</button>
+      </div>
+      <div class="error-msg" id="json-error"></div>
+    </div>
+    <div class="tab-content" id="tab-parts">
+      <div class="parts-grid" id="parts-grid">
+        <p style="color:var(--muted);font-size:0.85rem;">Parse a JSON first to see parts here.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3: Settings + Generate -->
+  <div class="card">
+    <div class="step-label">Step 3</div>
+    <h2>Settings & Generate</h2>
+    <div class="settings-row" style="margin-bottom:16px;">
+      <div class="setting-group">
+        <label>Steps</label>
+        <input type="number" id="steps" value="20" min="5" max="50" />
+      </div>
+      <div class="setting-group">
+        <label>CFG Scale</label>
+        <input type="number" id="cfg" value="7.5" min="1" max="20" step="0.5" />
+      </div>
+    </div>
+    <button id="generate-btn" onclick="generateImages()" disabled>Generate Images</button>
+    <div class="error-msg" id="gen-error"></div>
+  </div>
+
+  <!-- Progress -->
+  <div class="card progress-section" id="progress-section">
+    <h2>Generating...</h2>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progress-fill"></div>
+    </div>
+    <div class="progress-text" id="progress-text">Starting...</div>
+  </div>
+
+  <!-- Results -->
+  <div class="card results-section" id="results-section">
+    <h2>Results</h2>
+    <div class="results-grid" id="results-grid"></div>
+    <button id="clear-results-btn" onclick="clearResults()">Clear Results</button>
+  </div>
+
+</div>
+
+<script>
+let ngrokBase = '';
+let parts = [];
+
+// ── ngrok bypass: wrap ALL fetches so the header is always present ──
+function ngrokFetch(url, options = {}) {
+  options.headers = {
+    'ngrok-skip-browser-warning': 'true',
+    ...(options.headers || {}),
+  };
+  return fetch(url, options);
+}
+
+// ── Connection ──────────────────────────────────────────────────────
+async function connectNgrok() {
+  const url = document.getElementById('ngrok-url').value.trim().replace(/\/$/, '');
+  if (!url) return;
+  
+  const dot  = document.getElementById('status-dot');
+  const text = document.getElementById('status-text');
+  const err  = document.getElementById('connect-error');
+  
+  text.textContent = 'Connecting...';
+  dot.className = 'status-dot';
+  err.classList.remove('show');
+
+  try {
+    const res = await ngrokFetch(`${url}/health`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    ngrokBase = url;
+    dot.className = 'status-dot connected';
+    text.textContent = `Connected — model: ${data.model || 'unknown'}`;
+    checkEnableGenerate();
+  } catch (e) {
+    dot.className = 'status-dot error';
+    text.textContent = 'Connection failed';
+    err.textContent = `Error: ${e.message}. Check: 1) Colab server running? 2) URL correct? 3) See hint below.`;
+    err.classList.add('show');
+  }
+}
+
+// ── JSON Parsing ────────────────────────────────────────────────────
+function parseJSON() {
+  const raw = document.getElementById('json-input').value.trim();
+  const err = document.getElementById('json-error');
+  err.classList.remove('show');
+
+  try {
+    // Try to extract JSON even if wrapped in markdown
+    let cleaned = raw.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(cleaned);
+    
+    if (!parsed.parts || !Array.isArray(parsed.parts)) {
+      throw new Error('JSON must have a "parts" array');
+    }
+    
+    parts = parsed.parts.map((p, i) => ({
+      part_index: p.part_index ?? i,
+      text: p.text || '',
+      prompt: p.prompt || '',
+    }));
+
+    renderParts();
+    switchTab('parts');
+    checkEnableGenerate();
+  } catch (e) {
+    err.textContent = `Parse error: ${e.message}`;
+    err.classList.add('show');
+  }
+}
+
+function renderParts() {
+  const grid = document.getElementById('parts-grid');
+  grid.innerHTML = '';
+  
+  parts.forEach((part, i) => {
+    const div = document.createElement('div');
+    div.className = 'part-row';
+    div.innerHTML = `
+      <label>Part ${i + 1}</label>
+      <div class="part-story-text">${part.text || '(no story text)'}</div>
+      <textarea id="prompt-${i}" rows="3">${part.prompt}</textarea>
+      <div class="part-actions">
+        <button class="btn-secondary" onclick="addSuffix(${i})" style="font-size:0.75rem;padding:6px 12px;">+ Suffix</button>
+        <button class="btn-secondary" onclick="resetPrompt(${i})" style="font-size:0.75rem;padding:6px 12px;">Reset</button>
+      </div>
+    `;
+    grid.appendChild(div);
+  });
+}
+
+function addSuffix(i) {
+  const ta = document.getElementById(`prompt-${i}`);
+  const suffix = ', highly detailed, masterpiece, beautiful illustration, 8k';
+  if (!ta.value.includes('highly detailed')) {
+    ta.value = ta.value.trimEnd() + suffix;
+  }
+}
+
+function resetPrompt(i) {
+  document.getElementById(`prompt-${i}`).value = parts[i].prompt;
+}
+
+function getCurrentParts() {
+  return parts.map((p, i) => ({
+    ...p,
+    prompt: document.getElementById(`prompt-${i}`)?.value || p.prompt,
+  }));
+}
+
+// ── Generation ──────────────────────────────────────────────────────
+async function generateImages() {
+  if (!ngrokBase) { alert('Connect to Colab first!'); return; }
+  if (!parts.length) { alert('Parse a JSON with parts first!'); return; }
+
+  const currentParts = getCurrentParts();
+  const steps = parseInt(document.getElementById('steps').value) || 20;
+  const cfg   = parseFloat(document.getElementById('cfg').value) || 7.5;
+
+  const err = document.getElementById('gen-error');
+  err.classList.remove('show');
+  
+  document.getElementById('generate-btn').disabled = true;
+  
+  const prog = document.getElementById('progress-section');
+  prog.classList.add('active');
+  setProgress(0, `Sending ${currentParts.length} prompts to Colab...`);
+
+  try {
+    const res = await ngrokFetch(`${ngrokBase}/generate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ parts: currentParts, steps, cfg }),
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`Server error ${res.status}: ${text.slice(0,200)}`);
+    }
+
+    setProgress(90, 'Processing results...');
+    const data = await res.json();
+    
+    prog.classList.remove('active');
+    document.getElementById('generate-btn').disabled = false;
+    
+    showResults(data.results || []);
+
+  } catch (e) {
+    prog.classList.remove('active');
+    document.getElementById('generate-btn').disabled = false;
+    err.textContent = `Generation failed: ${e.message}`;
+    err.classList.add('show');
+  }
+}
+
+function setProgress(pct, text) {
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = text;
+}
+
+// Poll progress estimate
+function animateProgress(total) {
+  let current = 5;
+  const estimatedMs = total * 1000 * 3; // ~3s per step rough estimate
+  const interval = estimatedMs / 85;
+  const timer = setInterval(() => {
+    current = Math.min(current + 1, 85);
+    setProgress(current, `Generating images... (${current}% est.)`);
+    if (current >= 85) clearInterval(timer);
+  }, interval);
+  return timer;
+}
+
+function showResults(results) {
+  const section = document.getElementById('results-section');
+  const grid = document.getElementById('results-grid');
+  section.classList.add('active');
+
+  results.forEach((r, i) => {
+    const card = document.createElement('div');
+    card.className = 'result-card';
+    card.style.animationDelay = `${i * 0.1}s`;
+    card.innerHTML = `
+      <img src="data:image/png;base64,${r.image_b64}" alt="Part ${r.part_index + 1}" loading="lazy" />
+      <div class="result-meta">
+        <div class="result-part-label">Part ${r.part_index + 1}</div>
+        <div class="result-story-text">${r.text || ''}</div>
+        <div class="result-prompt-label">Prompt used:</div>
+        <div class="result-prompt">${r.prompt}</div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+
+  section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function clearResults() {
+  const grid = document.getElementById('results-grid');
+  grid.innerHTML = '';
+  document.getElementById('results-section').classList.remove('active');
+}
+
+// ── Tab switching ───────────────────────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    t.classList.toggle('active', (i === 0 && name === 'json') || (i === 1 && name === 'parts'));
+  });
+  document.getElementById('tab-json').classList.toggle('active', name === 'json');
+  document.getElementById('tab-parts').classList.toggle('active', name === 'parts');
+}
+
+// ── Helpers ─────────────────────────────────────────────────────────
+function checkEnableGenerate() {
+  const btn = document.getElementById('generate-btn');
+  btn.disabled = !(ngrokBase && parts.length > 0);
+}
+
+function clearJSON() {
+  document.getElementById('json-input').value = '';
+  document.getElementById('json-error').classList.remove('show');
+}
+
+function copyLLMPrompt() {
+  const text = `You are a Stable Diffusion prompt engineer. Given a story, split it into 5 parts and for each part write a detailed, vivid image generation prompt. Output ONLY valid JSON with no markdown, no extra text.\n\nStory: [PASTE YOUR STORY HERE]\n\nFormat:\n{\n  "parts": [\n    {"part_index": 0, "text": "Part of story text...", "prompt": "studio ghibli anime style, establishing shot, [detailed scene description], soft cel shading, warm golden light, highly detailed, masterpiece"},\n    {"part_index": 1, "text": "Part of story text...", "prompt": "studio ghibli anime style, medium shot, [detailed scene description], soft cel shading, highly detailed, masterpiece"},\n    {"part_index": 2, "text": "Part of story text...", "prompt": "studio ghibli anime style, close-up, [detailed scene description], soft cel shading, highly detailed, masterpiece"},\n    {"part_index": 3, "text": "Part of story text...", "prompt": "studio ghibli anime style, wide shot, [detailed scene description], soft cel shading, highly detailed, masterpiece"},\n    {"part_index": 4, "text": "Part of story text...", "prompt": "studio ghibli anime style, portrait shot, [detailed scene description], soft cel shading, highly detailed, masterpiece"}\n  ]\n}`;
+  navigator.clipboard.writeText(text);
+
+  const btn = event.target;
+  const original = btn.textContent;
+  btn.textContent = '✅ Copied!';
+  setTimeout(() => btn.textContent = original, 1500);
+}
+
+function loadExample() {
+  const example = {
+    "parts": [
+      {
+        "part_index": 0,
+        "text": "A little fox wanders into a glowing mushroom forest at twilight.",
+        "prompt": "studio ghibli anime style, establishing wide shot, a small orange fox with fluffy tail entering an enchanted forest filled with glowing blue and purple mushrooms, soft twilight sky with stars appearing, magical and whimsical, soft cel shading, warm and cool color contrast, highly detailed, masterpiece"
+      },
+      {
+        "part_index": 1,
+        "text": "She discovers the biggest mushroom pulsing with golden light.",
+        "prompt": "studio ghibli anime style, medium shot, curious small orange fox standing before an enormous glowing golden mushroom, light rays streaming from the cap, forest floor covered in moss and tiny flowers, sense of wonder and awe, soft cel shading, golden hour lighting, highly detailed, masterpiece"
+      },
+      {
+        "part_index": 2,
+        "text": "Tiny forest spirits emerge from beneath its cap.",
+        "prompt": "studio ghibli anime style, close-up, tiny translucent spirit creatures floating out from underneath a giant glowing mushroom cap, their bodies leaving trails of soft light, fox watching with wide amber eyes, bokeh background, magical atmosphere, highly detailed, masterpiece"
+      },
+      {
+        "part_index": 3,
+        "text": "The fox and the spirits dance together under the moonlight.",
+        "prompt": "studio ghibli anime style, wide shot, joyful fox dancing with glowing spirit creatures in a moonlit clearing, full moon above, silver light on the grass, colorful trails of spirit light forming patterns, playful and magical scene, soft cel shading, highly detailed, masterpiece"
+      },
+      {
+        "part_index": 4,
+        "text": "As dawn breaks, the fox falls asleep among the mushrooms, smiling.",
+        "prompt": "studio ghibli anime style, portrait close-up, sleeping orange fox curled up peacefully among glowing mushrooms as soft pink dawn light filters through trees, gentle smile, dew drops on the mushrooms, serene and heartwarming, soft morning light, highly detailed, masterpiece"
+      }
+    ]
+  };
+  document.getElementById('json-input').value = JSON.stringify(example, null, 2);
+}
+
+// Allow pressing Enter in URL input to connect
+document.getElementById('ngrok-url').addEventListener('keydown', e => {
+  if (e.key === 'Enter') connectNgrok();
+});
+</script>
+</body>
+</html>
