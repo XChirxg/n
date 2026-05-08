@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Exam Tracker</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body { font-family: 'Courier New', monospace; background: #111; color: #f0f0f0; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
+
+  #topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; background: #111; flex-shrink: 0; border-bottom: 1px solid #1e1e1e; }
+  #qnum { font-size: 1.5rem; font-weight: 900; color: #fff; letter-spacing: 1px; min-width: 60px; }
+  #timer { font-size: 1.4rem; font-weight: 700; font-variant-numeric: tabular-nums; color: #888; transition: color 0.4s; }
+  #timer.over { color: #e74c3c; }
+  #done-btn { min-width: 60px; text-align: right; font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; color: #f0c040; cursor: pointer; padding: 6px 10px; border: 1px solid #f0c040; border-radius: 6px; background: transparent; font-family: 'Courier New', monospace; transition: all 0.15s; }
+  #done-btn:active { background: #f0c040; color: #000; }
+
+  #options { flex: 1; display: flex; flex-direction: column; }
+  .opt-row { display: flex; flex: 1; }
+  .opt-btn { flex: 1; font-size: 4rem; font-weight: 900; border: none; background: #1a1a1a; color: #333; cursor: pointer; transition: background 0.12s, color 0.12s; user-select: none; }
+  .opt-row:first-child { border-bottom: 2px solid #111; }
+  .opt-btn:first-child { border-right: 1px solid #111; }
+  .opt-btn:last-child { border-left: 1px solid #111; }
+  .opt-btn:active { background: #222; color: #777; }
+  .opt-btn.selected { background: #1e1a00; color: #f0c040; }
+  .opt-btn.correct-flash { background: #0a2a0a !important; color: #27ae60 !important; }
+  .opt-btn.wrong-flash { background: #2a0a0a !important; color: #e74c3c !important; }
+
+  #phase-home   { display: flex; flex-direction: column; height: 100dvh; overflow-y: auto; }
+  #phase-record { display: none; flex-direction: column; height: 100dvh; }
+  #phase-check  { display: none; flex-direction: column; height: 100dvh; }
+  #phase-result { display: none; flex-direction: column; height: 100dvh; overflow-y: auto; }
+
+  #check-topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 1px solid #1e1e1e; flex-shrink: 0; }
+  #check-qnum { font-size: 1.5rem; font-weight: 900; color: #7ec8e3; }
+  #check-label { font-size: 0.65rem; letter-spacing: 2px; color: #2a6070; }
+  #check-done { font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; color: #7ec8e3; cursor: pointer; padding: 6px 10px; border: 1px solid #7ec8e3; border-radius: 6px; background: transparent; font-family: 'Courier New', monospace; }
+  #check-done:active { background: #7ec8e3; color: #000; }
+
+  .topbar-r { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 1px solid #1e1e1e; flex-shrink: 0; }
+  .topbar-r span { font-size: 1rem; font-weight: 900; letter-spacing: 3px; }
+  .score-row { display: flex; flex-shrink: 0; }
+  .score-box { flex: 1; padding: 16px; text-align: center; }
+  .score-box.c { background: #0a2a0a; border-bottom: 2px solid #27ae60; }
+  .score-box.w { background: #2a0a0a; border-bottom: 2px solid #e74c3c; }
+  .score-box .snum { font-size: 2.2rem; font-weight: 900; }
+  .score-box.c .snum { color: #27ae60; }
+  .score-box.w .snum { color: #e74c3c; }
+  .score-box .slbl { font-size: 0.6rem; color: #666; letter-spacing: 2px; margin-top: 2px; }
+  #result-list { padding: 12px; }
+  .rrow { display: flex; align-items: center; padding: 11px 14px; margin-bottom: 8px; border-radius: 8px; background: #1a1a1a; border-left: 4px solid transparent; }
+  .rrow.ok  { border-left-color: #27ae60; }
+  .rrow.bad { border-left-color: #e74c3c; }
+  .rrow .rq { flex: 0 0 36px; color: #555; font-size: 0.7rem; }
+  .rrow .rm { flex: 1; font-size: 0.9rem; }
+  .rrow .rt { font-size: 0.6rem; color: #555; margin-top: 3px; }
+  .rrow .rs { font-weight: 900; font-size: 1rem; }
+  .rrow.ok .rs { color: #27ae60; }
+  .rrow.bad .rs { color: #e74c3c; }
+  #result-btns { padding: 12px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; }
+  .res-btn { width: 100%; padding: 16px; font-size: 0.8rem; letter-spacing: 3px; text-transform: uppercase; font-family: 'Courier New', monospace; border: 1px solid #555; background: transparent; color: #888; border-radius: 8px; cursor: pointer; }
+  .res-btn.primary { border-color: #f0c040; color: #f0c040; }
+  .res-btn:active { background: #333; color: #fff; }
+
+  .home-topbar { padding: 18px 18px 14px; border-bottom: 1px solid #1e1e1e; flex-shrink: 0; }
+  .home-title { font-size: 0.65rem; letter-spacing: 3px; color: #555; margin-bottom: 6px; }
+  .money-row { display: flex; align-items: center; gap: 10px; }
+  .money-icon { font-size: 1.4rem; color: #f0c040; }
+  .money-val { font-size: 2rem; font-weight: 900; color: #f0c040; letter-spacing: 1px; }
+  .money-lbl { font-size: 0.65rem; color: #555; letter-spacing: 1px; margin-top: 2px; }
+
+  .home-streak-head { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px 6px; flex-shrink: 0; }
+  .home-streak-lbl { font-size: 0.6rem; letter-spacing: 2px; color: #555; }
+  .new-session-btn { font-size: 0.7rem; letter-spacing: 1px; padding: 6px 12px; border: 1px solid #f0c040; color: #f0c040; border-radius: 6px; background: transparent; font-family: 'Courier New', monospace; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+  .new-session-btn:active { background: #f0c040; color: #000; }
+
+  .streak-list { padding: 0 12px 12px; overflow-y: auto; }
+  .srow { display: flex; align-items: center; padding: 12px 14px; margin-bottom: 8px; border-radius: 8px; background: #1a1a1a; border-left: 4px solid #2a2a2a; position: relative; }
+  .srow.hot { border-left-color: #e87c1e; }
+  .srow .fire-icon { font-size: 1.1rem; color: #e87c1e; margin-right: 10px; flex-shrink: 0; }
+  .srow .cold-icon { font-size: 1.1rem; color: #333; margin-right: 10px; flex-shrink: 0; }
+  .srow .sinfo { flex: 1; min-width: 0; }
+  .srow .sdate { font-size: 0.6rem; color: #555; letter-spacing: 1px; margin-bottom: 3px; }
+  .srow .sname { font-size: 0.9rem; font-weight: 700; color: #ccc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .srow .sstats { font-size: 0.6rem; color: #666; margin-top: 4px; display: flex; gap: 10px; flex-wrap: wrap; }
+  .srow .sright { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; margin-left: 8px; }
+  .srow .srs-val { font-size: 0.85rem; font-weight: 900; }
+  .srow .srs-val.pos { color: #27ae60; }
+  .srow .srs-val.neg { color: #e74c3c; }
+  .edit-btn { background: transparent; border: none; color: #444; cursor: pointer; font-size: 0.95rem; padding: 2px 4px; }
+  .edit-btn:hover { color: #888; }
+
+  .empty-home { text-align: center; padding: 40px 20px; color: #333; font-size: 0.8rem; letter-spacing: 1px; }
+  .empty-home i { font-size: 2rem; display: block; margin-bottom: 10px; }
+
+  .edit-overlay { position: absolute; inset: 0; background: #0f0f0f; border-radius: 8px; display: flex; align-items: center; gap: 8px; padding: 8px 12px; z-index: 10; }
+  .edit-overlay input { flex: 1; background: #1e1e1e; border: 1px solid #333; color: #f0f0f0; font-family: 'Courier New', monospace; font-size: 0.85rem; padding: 6px 10px; border-radius: 4px; outline: none; }
+  .edit-overlay input:focus { border-color: #f0c040; }
+  .edit-save { background: #f0c040; color: #000; border: none; border-radius: 4px; padding: 6px 12px; font-family: 'Courier New', monospace; font-size: 0.75rem; font-weight: 700; cursor: pointer; letter-spacing: 1px; }
+
+  .result-money-flash { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 14px; background: #1a1a00; border-bottom: 1px solid #2a2a00; flex-shrink: 0; }
+  .rmon { font-size: 1.1rem; font-weight: 900; color: #f0c040; letter-spacing: 1px; }
+  .rmon-lbl { font-size: 0.6rem; color: #666; letter-spacing: 1px; }
+</style>
+</head>
+<body>
+
+<!-- HOME -->
+<div id="phase-home">
+  <div class="home-topbar">
+    <div class="home-title">TOTAL BALANCE</div>
+    <div class="money-row">
+      <i class="ti ti-wallet money-icon" aria-hidden="true"></i>
+      <div>
+        <div class="money-val" id="home-money">₹0</div>
+        <div class="money-lbl">RUPEES EARNED</div>
+      </div>
+    </div>
+  </div>
+  <div class="home-streak-head">
+    <span class="home-streak-lbl">SESSION HISTORY</span>
+    <button class="new-session-btn" onclick="startNewSession()"><i class="ti ti-plus" aria-hidden="true"></i> NEW SESSION</button>
+  </div>
+  <div class="streak-list" id="streak-list">
+    <div class="empty-home" id="empty-msg"><i class="ti ti-clipboard-list" aria-hidden="true"></i>NO SESSIONS YET<br><span style="font-size:0.65rem;color:#2a2a2a;margin-top:6px;display:block">START A SESSION TO BUILD YOUR STREAK</span></div>
+  </div>
+</div>
+
+<!-- RECORD -->
+<div id="phase-record">
+  <div id="topbar">
+    <div id="qnum">Q1</div>
+    <div id="timer">0:00</div>
+    <button id="done-btn" onclick="doneRecording()">DONE</button>
+  </div>
+  <div id="options">
+    <div class="opt-row">
+      <button class="opt-btn" id="btn-A" onclick="selectOpt('A')">A</button>
+      <button class="opt-btn" id="btn-B" onclick="selectOpt('B')">B</button>
+    </div>
+    <div class="opt-row">
+      <button class="opt-btn" id="btn-C" onclick="selectOpt('C')">C</button>
+      <button class="opt-btn" id="btn-D" onclick="selectOpt('D')">D</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHECK -->
+<div id="phase-check">
+  <div id="check-topbar">
+    <div id="check-qnum">Q1</div>
+    <div id="check-label">CORRECT ANS?</div>
+    <button id="check-done" onclick="showResults()">RESULTS</button>
+  </div>
+  <div id="options-check" style="flex:1;display:flex;flex-direction:column">
+    <div class="opt-row">
+      <button class="opt-btn" id="cbtn-A" onclick="selectCorrect('A')">A</button>
+      <button class="opt-btn" id="cbtn-B" onclick="selectCorrect('B')">B</button>
+    </div>
+    <div class="opt-row">
+      <button class="opt-btn" id="cbtn-C" onclick="selectCorrect('C')">C</button>
+      <button class="opt-btn" id="cbtn-D" onclick="selectCorrect('D')">D</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div id="phase-result">
+  <div class="topbar-r">
+    <span>RESULTS</span>
+    <button class="edit-btn" onclick="goHome()" style="color:#7ec8e3;border:1px solid #7ec8e3;border-radius:6px;padding:6px 10px;font-size:0.7rem;letter-spacing:1px;font-family:'Courier New',monospace;">
+      <i class="ti ti-home" aria-hidden="true"></i> HOME
+    </button>
+  </div>
+  <div class="result-money-flash">
+    <i class="ti ti-coin" style="font-size:1.2rem;color:#f0c040" aria-hidden="true"></i>
+    <div>
+      <div class="rmon" id="session-earn">+₹0</div>
+      <div class="rmon-lbl">THIS SESSION</div>
+    </div>
+    <div style="width:1px;background:#2a2a00;height:28px;margin:0 4px"></div>
+    <div>
+      <div class="rmon" id="total-earn-res">₹0</div>
+      <div class="rmon-lbl">TOTAL BALANCE</div>
+    </div>
+  </div>
+  <div class="score-row">
+    <div class="score-box c"><div class="snum" id="correct-count">0</div><div class="slbl">CORRECT +₹40</div></div>
+    <div class="score-box w"><div class="snum" id="wrong-count">0</div><div class="slbl">WRONG −₹10</div></div>
+  </div>
+  <div id="result-list"></div>
+  <div id="result-btns">
+    <button class="res-btn primary" onclick="goHome()"><i class="ti ti-home" aria-hidden="true"></i> &nbsp;HOME</button>
+    <button class="res-btn" onclick="resetAll()"><i class="ti ti-refresh" aria-hidden="true"></i> &nbsp;NEW SESSION</button>
+  </div>
+</div>
+
+<script>
+  let myAnswers = [];
+  let correctAnswers = [];
+  let curQ = 0, curC = 0, avgTime = Infinity, elapsed = 0;
+  let timerInterval = null;
+  let lockSelect = false, lockCheck = false;
+  let totalMoney = 0;
+  let sessions = [];
+  let currentSessionDate = '';
+  let currentSessionName = '';
+
+  function loadData() {
+    try {
+      const d = JSON.parse(localStorage.getItem('examData') || '{}');
+      totalMoney = d.totalMoney || 0;
+      sessions = d.sessions || [];
+    } catch(e) { totalMoney = 0; sessions = []; }
+  }
+
+  function saveData() {
+    try { localStorage.setItem('examData', JSON.stringify({ totalMoney, sessions })); } catch(e) {}
+  }
+
+  function formatDate(iso) {
+    const d = new Date(iso);
+    const days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+    const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+    return days[d.getDay()] + ' ' + d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
+  }
+
+  function fmtTime(s) {
+    const m = Math.floor(s/60), sec = s%60;
+    return m + ':' + String(sec).padStart(2,'0');
+  }
+
+  function isStreakDay(sorted, idx) {
+    if (sorted.length < 2) return true;
+    if (idx === sorted.length - 1) return true;
+    const d1 = new Date(sorted[idx].date);
+    const d2 = new Date(sorted[idx+1].date);
+    d1.setHours(0,0,0,0); d2.setHours(0,0,0,0);
+    const diff = Math.abs(d2 - d1) / 86400000;
+    return diff <= 1;
+  }
+
+  function renderHome() {
+    document.getElementById('home-money').textContent = '₹' + totalMoney;
+    const list = document.getElementById('streak-list');
+    const emptyMsg = document.getElementById('empty-msg');
+    if (sessions.length === 0) {
+      emptyMsg.style.display = 'block';
+      list.querySelectorAll('.srow').forEach(e => e.remove());
+      return;
+    }
+    emptyMsg.style.display = 'none';
+    const sorted = [...sessions].sort((a,b) => new Date(b.date) - new Date(a.date));
+    list.querySelectorAll('.srow').forEach(e => e.remove());
+
+    sorted.forEach((sess, i) => {
+      const hot = isStreakDay(sorted, i) && (i === 0 || isStreakDay(sorted, i-1));
+      const earn = sess.correct * 40 - sess.wrong * 10;
+      const row = document.createElement('div');
+      row.className = 'srow' + (hot ? ' hot' : '');
+      row.id = 'srow-' + sess.id;
+      const avgT = sess.totalQ > 0 ? Math.round(sess.totalTime / sess.totalQ) : 0;
+      row.innerHTML = `
+        <i class="ti ${hot ? 'ti-flame' : 'ti-moon'} ${hot ? 'fire-icon' : 'cold-icon'}" aria-hidden="true"></i>
+        <div class="sinfo">
+          <div class="sdate">${formatDate(sess.date)}</div>
+          <div class="sname" id="sname-${sess.id}">${sess.name}</div>
+          <div class="sstats">
+            <span><i class="ti ti-check" style="font-size:0.65rem" aria-hidden="true"></i> ${sess.correct} CORRECT</span>
+            <span><i class="ti ti-x" style="font-size:0.65rem" aria-hidden="true"></i> ${sess.wrong} WRONG</span>
+            <span><i class="ti ti-clock" style="font-size:0.65rem" aria-hidden="true"></i> ${fmtTime(avgT)} AVG</span>
+            <span><i class="ti ti-list-numbers" style="font-size:0.65rem" aria-hidden="true"></i> ${sess.totalQ} TOTAL</span>
+          </div>
+        </div>
+        <div class="sright">
+          <div class="srs-val ${earn >= 0 ? 'pos' : 'neg'}">${earn >= 0 ? '+' : ''}₹${earn}</div>
+          <button class="edit-btn" onclick="startEdit('${sess.id}')" aria-label="Edit session name"><i class="ti ti-pencil" style="font-size:0.9rem" aria-hidden="true"></i></button>
+        </div>
+      `;
+      list.appendChild(row);
+    });
+  }
+
+  function startEdit(id) {
+    const row = document.getElementById('srow-' + id);
+    const sess = sessions.find(s => s.id === id);
+    if (!sess) return;
+    const overlay = document.createElement('div');
+    overlay.className = 'edit-overlay';
+    overlay.innerHTML = `
+      <input type="text" id="edit-inp-${id}" value="${sess.name}" maxlength="40" placeholder="Session name...">
+      <button class="edit-save" onclick="saveEdit('${id}')">SAVE</button>
+    `;
+    row.appendChild(overlay);
+    setTimeout(() => { const inp = document.getElementById('edit-inp-' + id); if(inp) inp.focus(); }, 50);
+  }
+
+  function saveEdit(id) {
+    const inp = document.getElementById('edit-inp-' + id);
+    const sess = sessions.find(s => s.id === id);
+    if (sess && inp) { sess.name = inp.value.trim() || sess.name; saveData(); renderHome(); }
+  }
+
+  function startNewSession() {
+    currentSessionDate = new Date().toISOString();
+    currentSessionName = 'SESSION ' + (sessions.length + 1);
+    show('phase-record');
+    resetRecordState();
+    startTimer();
+    renderRecordPhase();
+  }
+
+  function goHome() {
+    show('phase-home');
+    renderHome();
+  }
+
+  function show(id) {
+    ['phase-home','phase-record','phase-check','phase-result'].forEach(p => {
+      document.getElementById(p).style.display = p === id ? 'flex' : 'none';
+    });
+  }
+
+  function startTimer() {
+    stopTimer(); elapsed = 0; renderTimer();
+    timerInterval = setInterval(() => { elapsed++; renderTimer(); }, 1000);
+  }
+  function stopTimer() { if (timerInterval) { clearInterval(timerInterval); timerInterval = null; } }
+  function renderTimer() {
+    const m = Math.floor(elapsed/60), s = elapsed%60;
+    const el = document.getElementById('timer');
+    el.textContent = m + ':' + String(s).padStart(2,'0');
+    el.classList.toggle('over', avgTime !== Infinity && elapsed > avgTime);
+  }
+  function recalcAvg() {
+    const answered = myAnswers.filter(a => a);
+    if (answered.length >= 2) avgTime = answered.reduce((s,a) => s+a.time, 0) / answered.length;
+  }
+
+  function resetRecordState() {
+    myAnswers = []; correctAnswers = [];
+    curQ = 0; curC = 0; avgTime = Infinity; elapsed = 0;
+    lockSelect = false; lockCheck = false;
+  }
+
+  function renderRecordPhase() {
+    document.getElementById('qnum').textContent = 'Q' + (curQ+1);
+    ['A','B','C','D'].forEach(o => { document.getElementById('btn-'+o).className = 'opt-btn'; });
+  }
+
+  function selectOpt(opt) {
+    if (lockSelect) return;
+    lockSelect = true;
+    stopTimer();
+    myAnswers[curQ] = { opt, time: elapsed };
+    recalcAvg();
+    document.getElementById('btn-'+opt).classList.add('selected');
+    setTimeout(() => { lockSelect = false; curQ++; renderRecordPhase(); startTimer(); }, 900);
+  }
+
+  function doneRecording() {
+    stopTimer();
+    while (curQ > 0 && !myAnswers[curQ-1]) curQ--;
+    if (myAnswers.filter(a=>a).length === 0) { alert('Answer at least one question!'); startTimer(); return; }
+    const total = myAnswers.filter(a=>a).length;
+    correctAnswers = new Array(total).fill(null);
+    curC = 0;
+    show('phase-check');
+    renderCheckPhase();
+  }
+
+  function renderCheckPhase() {
+    document.getElementById('check-qnum').textContent = 'Q' + (curC+1);
+    ['A','B','C','D'].forEach(o => { document.getElementById('cbtn-'+o).className = 'opt-btn'; });
+  }
+
+  function selectCorrect(opt) {
+    if (lockCheck) return;
+    lockCheck = true;
+    correctAnswers[curC] = opt;
+    const myAns = myAnswers[curC] ? myAnswers[curC].opt : null;
+    const ok = myAns === opt;
+    document.getElementById('cbtn-'+opt).classList.add('correct-flash');
+    if (myAns && !ok) document.getElementById('cbtn-'+myAns).classList.add('wrong-flash');
+    setTimeout(() => {
+      lockCheck = false;
+      if (curC < correctAnswers.length - 1) { curC++; renderCheckPhase(); }
+    }, 900);
+  }
+
+  function showResults() {
+    show('phase-result');
+    let correct = 0, wrong = 0, totalTime = 0;
+    const list = document.getElementById('result-list');
+    list.innerHTML = '';
+
+    myAnswers.forEach((entry, i) => {
+      const my = entry ? entry.opt : '—';
+      const ans = correctAnswers[i] || '—';
+      const t = entry ? entry.time : 0;
+      const ok = my !== '—' && my === ans;
+      if (my !== '—') { ok ? correct++ : wrong++; totalTime += t; }
+      const m = Math.floor(t/60), s = t%60;
+      const timeStr = m + ':' + String(s).padStart(2,'0');
+      const row = document.createElement('div');
+      row.className = 'rrow ' + (ok ? 'ok' : 'bad');
+      row.innerHTML = `<span class="rq">Q${i+1}</span><span class="rm">You: <b>${my}</b>${!ok && ans !== '—' ? ' → <b>'+ans+'</b>' : ''}<div class="rt">${timeStr} spent</div></span><span class="rs">${ok ? '✓' : '✗'}</span>`;
+      list.appendChild(row);
+    });
+
+    const sessionEarn = correct * 40 - wrong * 10;
+    totalMoney += sessionEarn;
+
+    const sessId = 'sess_' + Date.now();
+    sessions.push({
+      id: sessId,
+      name: currentSessionName,
+      date: currentSessionDate || new Date().toISOString(),
+      correct, wrong,
+      totalQ: correct + wrong,
+      totalTime,
+      earn: sessionEarn
+    });
+    saveData();
+
+    document.getElementById('correct-count').textContent = correct;
+    document.getElementById('wrong-count').textContent = wrong;
+    document.getElementById('session-earn').textContent = (sessionEarn >= 0 ? '+' : '') + '₹' + sessionEarn;
+    document.getElementById('total-earn-res').textContent = '₹' + totalMoney;
+  }
+
+  function resetAll() {
+    currentSessionDate = new Date().toISOString();
+    currentSessionName = 'SESSION ' + (sessions.length + 1);
+    resetRecordState();
+    show('phase-record');
+    renderRecordPhase();
+    startTimer();
+  }
+
+  loadData();
+  renderHome();
+  show('phase-home');
+</script>
+</body>
+</html>
