@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Theog Demographic Dashboard</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #0f172a;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 2rem;
+    }
+
+    .topbar {
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 16px;
+      margin-bottom: 20px;
+    }
+
+    input,
+    select {
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      background: #334155;
+      color: white;
+      margin-right: 10px;
+      margin-top: 10px;
+      font-size: 15px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 16px;
+    }
+
+    .card h2 {
+      margin: 0;
+      font-size: 2rem;
+    }
+
+    .card p {
+      margin: 5px 0 0;
+      color: #94a3b8;
+    }
+
+    .chart-container {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      height: 700px;
+    }
+
+    .info {
+      color: #cbd5e1;
+      margin-top: 10px;
+      line-height: 1.7;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <h1>Theog Demographic Pyramid Dashboard</h1>
+
+    <input type="file" id="csvFile" accept=".csv" />
+
+    <select id="villageSelect">
+      <option value="ALL">Whole Theog</option>
+    </select>
+
+    <div class="info">
+      Upload your electoral CSV file.
+      <br>
+      This dashboard automatically creates:
+      <br>
+      • Population pyramids
+      <br>
+      • Village-wise demographics
+      <br>
+      • Gender distribution
+      <br>
+      • Age group analysis
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="card">
+      <h2 id="totalPopulation">0</h2>
+      <p>Total Population</p>
+    </div>
+
+    <div class="card">
+      <h2 id="maleCount">0</h2>
+      <p>Male</p>
+    </div>
+
+    <div class="card">
+      <h2 id="femaleCount">0</h2>
+      <p>Female</p>
+    </div>
+
+    <div class="card">
+      <h2 id="avgAge">0</h2>
+      <p>Average Age</p>
+    </div>
+  </div>
+
+  <div class="chart-container">
+    <canvas id="pyramidChart"></canvas>
+  </div>
+
+  <script>
+
+    const ageGroups = [
+      '0-4','5-9','10-14','15-19','20-24','25-29','30-34','35-39',
+      '40-44','45-49','50-54','55-59','60-64','65-69','70-74','75-79',
+      '80-84','85-89','90-94','95-99','100+'
+    ];
+
+    let allRows = [];
+    let pyramidChart = null;
+
+    const villageSelect = document.getElementById('villageSelect');
+
+    document.getElementById('csvFile').addEventListener('change', function(e) {
+
+      const file = e.target.files[0];
+
+      if (!file) return;
+
+      Papa.parse(file, {
+        header: true,
+        skipEmptyLines: true,
+        complete: function(results) {
+
+          allRows = results.data;
+
+          populateVillageDropdown();
+
+          renderVillage('ALL');
+        }
+      });
+    });
+
+    villageSelect.addEventListener('change', function() {
+      renderVillage(this.value);
+    });
+
+    function populateVillageDropdown() {
+
+      const villages = new Set();
+
+      allRows.forEach(row => {
+
+        const village = (
+          row.panchayat ||
+          row.village ||
+          row.ward_name ||
+          'Unknown'
+        ).trim();
+
+        if (village) {
+          villages.add(village);
+        }
+      });
+
+      villageSelect.innerHTML = '<option value="ALL">Whole Theog</option>';
+
+      [...villages].sort().forEach(village => {
+
+        const option = document.createElement('option');
+
+        option.value = village;
+        option.textContent = village;
+
+        villageSelect.appendChild(option);
+      });
+    }
+
+    function renderVillage(selectedVillage) {
+
+      let rows = allRows;
+
+      if (selectedVillage !== 'ALL') {
+
+        rows = rows.filter(row => {
+
+          const village = (
+            row.panchayat ||
+            row.village ||
+            row.ward_name ||
+            'Unknown'
+          ).trim();
+
+          return village === selectedVillage;
+        });
+      }
+
+      updateStats(rows);
+
+      buildPopulationPyramid(rows, selectedVillage);
+    }
+
+    function updateStats(rows) {
+
+      let male = 0;
+      let female = 0;
+      let totalAge = 0;
+      let validAgeCount = 0;
+
+      rows.forEach(row => {
+
+        const gender = (row.gender || '').toLowerCase();
+
+        if (gender.includes('male')) male++;
+        if (gender.includes('female')) female++;
+
+        const age = parseInt(row.age);
+
+        if (!isNaN(age)) {
+          totalAge += age;
+          validAgeCount++;
+        }
+      });
+
+      document.getElementById('totalPopulation').textContent = rows.length.toLocaleString();
+      document.getElementById('maleCount').textContent = male.toLocaleString();
+      document.getElementById('femaleCount').textContent = female.toLocaleString();
+
+      const avgAge = validAgeCount
+        ? (totalAge / validAgeCount).toFixed(1)
+        : 0;
+
+      document.getElementById('avgAge').textContent = avgAge;
+    }
+
+    function getAgeGroup(age) {
+
+      if (age >= 100) return '100+';
+
+      const lower = Math.floor(age / 5) * 5;
+      const upper = lower + 4;
+
+      return `${lower}-${upper}`;
+    }
+
+    function buildPopulationPyramid(rows, title) {
+
+      const maleGroups = {};
+      const femaleGroups = {};
+
+      ageGroups.forEach(group => {
+        maleGroups[group] = 0;
+        femaleGroups[group] = 0;
+      });
+
+      rows.forEach(row => {
+
+        const age = parseInt(row.age);
+
+        if (isNaN(age)) return;
+
+        const group = getAgeGroup(age);
+
+        const gender = (row.gender || '').toLowerCase();
+
+        if (gender.includes('male')) {
+          maleGroups[group]++;
+        }
+        else if (gender.includes('female')) {
+          femaleGroups[group]++;
+        }
+      });
+
+      const totalPopulation = rows.length || 1;
+
+      const maleData = ageGroups.map(group => {
+        return -(maleGroups[group] / totalPopulation * 100).toFixed(2);
+      });
+
+      const femaleData = ageGroups.map(group => {
+        return +(femaleGroups[group] / totalPopulation * 100).toFixed(2);
+      });
+
+      const ctx = document.getElementById('pyramidChart').getContext('2d');
+
+      if (pyramidChart) {
+        pyramidChart.destroy();
+      }
+
+      pyramidChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ageGroups,
+          datasets: [
+            {
+              label: 'Male',
+              data: maleData,
+              backgroundColor: '#4682B4'
+            },
+            {
+              label: 'Female',
+              data: femaleData,
+              backgroundColor: '#E5738A'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          indexAxis: 'y',
+          plugins: {
+            title: {
+              display: true,
+              text: `Population Pyramid - ${title}`,
+              color: '#111827',
+              font: {
+                size: 24
+              }
+            },
+            legend: {
+              labels: {
+                color: '#111827'
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return `${context.dataset.label}: ${Math.abs(context.raw)}%`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              ticks: {
+                callback: function(value) {
+                  return Math.abs(value) + '%';
+                },
+                color: '#111827'
+              },
+              grid: {
+                color: '#d1d5db'
+              }
+            },
+            y: {
+              ticks: {
+                color: '#111827'
+              },
+              grid: {
+                color: '#e5e7eb'
+              }
+            }
+          }
+        }
+      });
+    }
+
+  </script>
+
+</body>
+</html>
