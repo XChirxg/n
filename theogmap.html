@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_cfcac9819f9354baf0801612b6ffe5a4 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/leaflet.markercluster.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.Default.css"/>
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_cfcac9819f9354baf0801612b6ffe5a4" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_cfcac9819f9354baf0801612b6ffe5a4 = L.map(
+                "map_cfcac9819f9354baf0801612b6ffe5a4",
+                {
+                    center: [31.12, 77.36],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 10,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_ce686042697d3795ee5acc6262f93359 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_ce686042697d3795ee5acc6262f93359.addTo(map_cfcac9819f9354baf0801612b6ffe5a4);
+        
+    
+            var marker_cluster_218f5b201f8bfb55e01cc0be5b9afc17 = L.markerClusterGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_8654c7cd8dde78bd4a0823f99881a556 = L.circleMarker(
+                [31.1032209, 77.4363776],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_218f5b201f8bfb55e01cc0be5b9afc17);
+        
+    
+        var popup_450b0fe537b4e7423bc852ae72abb6e6 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a110ee81b79319a67f726ac59b8d8707 = $(`<div id="html_a110ee81b79319a67f726ac59b8d8707" style="width: 100.0%; height: 100.0%;">     <div style="width:250px">          <h2>BAGAIN</h2>          <hr>          <b>Total Records:</b>         0         <br><br>          <b>Male:</b>         0         <br><br>          <b>Female:</b>         0         <br><br>          <b>Average Age:</b>         0.0         <br>      </div>     </div>`)[0];
+                popup_450b0fe537b4e7423bc852ae72abb6e6.setContent(html_a110ee81b79319a67f726ac59b8d8707);
+            
+        
+
+        circle_marker_8654c7cd8dde78bd4a0823f99881a556.bindPopup(popup_450b0fe537b4e7423bc852ae72abb6e6)
+        ;
+
+        
+    
+    
+            circle_marker_8654c7cd8dde78bd4a0823f99881a556.bindTooltip(
+                `<div>
+                     BAGAIN
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c5b9254f3311809f518d170798a45b93 = L.circleMarker(
+                [31.0515104, 77.4212301],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_218f5b201f8bfb55e01cc0be5b9afc17);
+        
+    
+        var popup_70a4ac5917d62bab35be37fdbbd21198 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_02caaf622c8288e99b4b112b7803057f = $(`<div id="html_02caaf622c8288e99b4b112b7803057f" style="width: 100.0%; height: 100.0%;">     <div style="width:250px">          <h2>BAGRI</h2>          <hr>          <b>Total Records:</b>         0         <br><br>          <b>Male:</b>         0         <br><br>          <b>Female:</b>         0         <br><br>          <b>Average Age:</b>         0.0         <br>      </div>     </div>`)[0];
+                popup_70a4ac5917d62bab35be37fdbbd21198.setContent(html_02caaf622c8288e99b4b112b7803057f);
+            
+        
+
+        circle_marker_c5b9254f3311809f518d170798a45b93.bindPopup(popup_70a4ac5917d62bab35be37fdbbd21198)
+        ;
+
+        
+    
+    
+            circle_marker_c5b9254f3311809f518d170798a45b93.bindTooltip(
+                `<div>
+                     BAGRI
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f8b545182c869048cec9700014689100 = L.circleMarker(
+                [31.0298012, 77.3722091],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_218f5b201f8bfb55e01cc0be5b9afc17);
+        
+    
+        var popup_8aba86d16e56c5a296f8427724a66ebf = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_5d3d7d7714dfd61c07f6881caf245a9e = $(`<div id="html_5d3d7d7714dfd61c07f6881caf245a9e" style="width: 100.0%; height: 100.0%;">     <div style="width:250px">          <h2>BALAG</h2>          <hr>          <b>Total Records:</b>         0         <br><br>          <b>Male:</b>         0         <br><br>          <b>Female:</b>         0         <br><br>          <b>Average Age:</b>         0.0         <br>      </div>     </div>`)[0];
+                popup_8aba86d16e56c5a296f8427724a66ebf.setContent(html_5d3d7d7714dfd61c07f6881caf245a9e);
+            
+        
+
+        circle_marker_f8b545182c869048cec9700014689100.bindPopup(popup_8aba86d16e56c5a296f8427724a66ebf)
+        ;
+
+        
+    
+    
+            circle_marker_f8b545182c869048cec9700014689100.bindTooltip(
+                `<div>
+                     BALAG
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6e5bbcc53554f9001e75358d23ad9137 = L.circleMarker(
+                [31.0679306, 77.3956528],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_218f5b201f8bfb55e01cc0be5b9afc17);
+        
+    
+        var popup_580d2ce13dd7e1e41552d62b71ac9349 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1dd54a5d84a92db406c69a13faf39739 = $(`<div id="html_1dd54a5d84a92db406c69a13faf39739" style="width: 100.0%; height: 100.0%;">     <div style="width:250px">          <h2>BALGHAR</h2>          <hr>          <b>Total Records:</b>         0         <br><br>          <b>Male:</b>         0         <br><br>          <b>Female:</b>         0         <br><br>          <b>Average Age:</b>         0.0         <br>      </div>     </div>`)[0];
+                popup_580d2ce13dd7e1e41552d62b71ac9349.setContent(html_1dd54a5d84a92db406c69a13faf39739);
+            
+        
+
+        circle_marker_6e5bbcc53554f9001e75358d23ad9137.bindPopup(popup_580d2ce13dd7e1e41552d62b71ac9349)
+        ;
+
+        
+    
+    
+            circle_marker_6e5bbcc53554f9001e75358d23ad9137.bindTooltip(
+                `<div>
+                     BALGHAR
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2ac3e15b4e398d3c2e29881d2edc726a = L.circleMarker(
+                [31.0920963, 77.3103916],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_218f5b201f8bfb55e01cc0be5b9afc17);
+        
+    
+        var popup_9c0b49fe25d28c763b6d09e70ee2609b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_dcd91850d8255e4eb62653104fe2b509 = $(`<div id="html_dcd91850d8255e4eb62653104fe2b509" style="width: 100.0%; height: 100.0%;">     <div style="width:250px">          <h2>BANI</h2>          <hr>          <b>Total Records:</b>         0         <br><br>          <b>Male:</b>         0         <br><br>          <b>Female:</b>         0         <br><br>          <b>Average Age:</b>         0.0         <br>      </div>     </div>`)[0];
+                popup_9c0b49fe25d28c763b6d09e70ee2609b.setContent(html_dcd91850d8255e4eb62653104fe2b509);
+            
+        
+
+        circle_marker_2ac3e15b4e398d3c2e29881d2edc726a.bindPopup(popup_9c0b49fe25d28c763b6d09e70ee2609b)
+        ;
+
+        
+    
+    
+            circle_marker_2ac3e15b4e398d3c2e29881d2edc726a.bindTooltip(
+                `<div>
+                     BANI
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_73e5077ccddc586d224c8565b52c4e01 = L.circleMarker(
+                [30.9845446, 77.4561345],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_218f5b201f8bfb55e01cc0be5b9afc17);
+        
+    
+        var popup_a40f359ff8fd875fba170c29e8697b51 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_2480d8628579db6de9a9baaa57c76bea = $(`<div id="html_2480d8628579db6de9a9baaa57c76bea" style="width: 100.0%; height: 100.0%;">     <div style="width:250px">          <h2>BAROG</h2>          <hr>          <b>Total Records:</b>         0         <br><br>          <b>Male:</b>         0         <br><br>          <b>Female:</b>         0         <br><br>          <b>Average Age:</b>         0.0         <br>      </div>     </div>`)[0];
+                popup_a40f359ff8fd875fba170c29e8697b51.setContent(html_2480d8628579db6de9a9baaa57c76bea);
+            
+        
+
+        circle_marker_73e5077ccddc586d224c8565b52c4e01.bindPopup(popup_a40f359ff8fd875fba170c29e8697b51)
+        ;
+
+        
+    
+    
+            circle_marker_73e5077ccddc586d224c8565b52c4e01.bindTooltip(
+                `<div>
+                     BAROG
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_251b72ae0fd233c07bd66f52fb3aba7b = L.circleMarker(
+                [31.0026886, 77.4556836],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_218f5b201f8bfb55e01cc0be5b9afc17);
+        
+    
+        var popup_ec84b4780541a1d1e36e44bae1c0260a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3d9e5962438fde66ddf69619797b1cee = $(`<div id="html_3d9e5962438fde66ddf69619797b1cee" style="width: 100.0%; height: 100.0%;">     <div style="width:250px">          <h2>BASADHAR</h2>          <hr>          <b>Total Records:</b>         0         <br><br>          <b>Male:</b>         0         <br><br>          <b>Female:</b>         0         <br><br>          <b>Average Age:</b>         0.0         <br>      </div>     </div>`)[0];
+                popup_ec84b4780541a1d1e36e44bae1c0260a.setContent(html_3d9e5962438fde66ddf69619797b1cee);
+            
+        
+
+        circle_marker_251b72ae0fd233c07bd66f52fb3aba7b.bindPopup(popup_ec84b4780541a1d1e36e44bae1c0260a)
+        ;
+
+        
+    
+    
+            circle_marker_251b72ae0fd233c07bd66f52fb3aba7b.bindTooltip(
+                `<div>
+                     BASADHAR
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_983080a3d41bd9d54540d01bb7a1f5e9 = L.circleMarker(
+                [31.0656723, 77.3126471],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_218f5b201f8bfb55e01cc0be5b9afc17);
+        
+    
+        var popup_aa1918e89d563bc1c2676c30c813d07a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_f41dad56df5fb5c796976abf6985bc65 = $(`<div id="html_f41dad56df5fb5c796976abf6985bc65" style="width: 100.0%; height: 100.0%;">     <div style="width:250px">          <h2>CHEOG</h2>          <hr>          <b>Total Records:</b>         0         <br><br>          <b>Male:</b>         0         <br><br>          <b>Female:</b>         0         <br><br>          <b>Average Age:</b>         0.0         <br>      </div>     </div>`)[0];
+                popup_aa1918e89d563bc1c2676c30c813d07a.setContent(html_f41dad56df5fb5c796976abf6985bc65);
+            
+        
+
+        circle_marker_983080a3d41bd9d54540d01bb7a1f5e9.bindPopup(popup_aa1918e89d563bc1c2676c30c813d07a)
+        ;
+
+        
+    
+    
+            circle_marker_983080a3d41bd9d54540d01bb7a1f5e9.bindTooltip(
+                `<div>
+                     CHEOG
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4fe650640dec65638f61258c6ba7f738 = L.circleMarker(
+                [31.022584, 77.4348529],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_218f5b201f8bfb55e01cc0be5b9afc17);
+        
+    
+        var popup_ec3a11f005839a84cb393378284b98ee = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_35ecc8479d3a625218276f7631d8f52d = $(`<div id="html_35ecc8479d3a625218276f7631d8f52d" style="width: 100.0%; height: 100.0%;">     <div style="width:250px">          <h2>DEVTHI</h2>          <hr>          <b>Total Records:</b>         0         <br><br>          <b>Male:</b>         0         <br><br>          <b>Female:</b>         0         <br><br>          <b>Average Age:</b>         0.0         <br>      </div>     </div>`)[0];
+                popup_ec3a11f005839a84cb393378284b98ee.setContent(html_35ecc8479d3a625218276f7631d8f52d);
+            
+        
+
+        circle_marker_4fe650640dec65638f61258c6ba7f738.bindPopup(popup_ec3a11f005839a84cb393378284b98ee)
+        ;
+
+        
+    
+    
+            circle_marker_4fe650640dec65638f61258c6ba7f738.bindTooltip(
+                `<div>
+                     DEVTHI
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7dca49b129cd047c4c26d2c6828da2c6 = L.circleMarker(
+                [31.0236552, 77.3305857],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_218f5b201f8bfb55e01cc0be5b9afc17);
+        
+    
+        var popup_5939438a6ac4680b329abf8b79a3ad3a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3749766e13227031f63652be1794eb2b = $(`<div id="html_3749766e13227031f63652be1794eb2b" style="width: 100.0%; height: 100.0%;">     <div style="width:250px">          <h2>DHARECH</h2>          <hr>          <b>Total Records:</b>         0         <br><br>          <b>Male:</b>         0         <br><br>          <b>Female:</b>         0         <br><br>          <b>Average Age:</b>         0.0         <br>      </div>     </div>`)[0];
+                popup_5939438a6ac4680b329abf8b79a3ad3a.setContent(html_3749766e13227031f63652be1794eb2b);
+            
+        
+
+        circle_marker_7dca49b129cd047c4c26d2c6828da2c6.bindPopup(popup_5939438a6ac4680b329abf8b79a3ad3a)
+        ;
+
+        
+    
+    
+            circle_marker_7dca49b129cd047c4c26d2c6828da2c6.bindTooltip(
+                `<div>
+                     DHARECH
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_bf852e8c6571de1725b0fea91897de04 = L.circleMarker(
+                [31.1762012, 77.3241377],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_218f5b201f8bfb55e01cc0be5b9afc17);
+        
+    
+        var popup_5997213efad9b88ecc9cc7b25628cef9 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_f6f5fc1aaf8f06dae1a307fa6f16637d = $(`<div id="html_f6f5fc1aaf8f06dae1a307fa6f16637d" style="width: 100.0%; height: 100.0%;">     <div style="width:250px">          <h2>DHARMPUR</h2>          <hr>          <b>Total Records:</b>         0         <br><br>          <b>Male:</b>         0         <br><br>          <b>Female:</b>         0         <br><br>          <b>Average Age:</b>         0.0         <br>      </div>     </div>`)[0];
+                popup_5997213efad9b88ecc9cc7b25628cef9.setContent(html_f6f5fc1aaf8f06dae1a307fa6f16637d);
+            
+        
+
+        circle_marker_bf852e8c6571de1725b0fea91897de04.bindPopup(popup_5997213efad9b88ecc9cc7b25628cef9)
+        ;
+
+        
+    
+    
+            circle_marker_bf852e8c6571de1725b0fea91897de04.bindTooltip(
+                `<div>
+                     DHARMPUR
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_854e285f920df149b1c4b85570d2454b = L.circleMarker(
+                [31.077437, 77.427461],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_218f5b201f8bfb55e01cc0be5b9afc17);
+        
+    
+        var popup_f0b9be05dd421362e778cf2bcd3702bc = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_559f671ff1efa7e03d322adb9549ad6b = $(`<div id="html_559f671ff1efa7e03d322adb9549ad6b" style="width: 100.0%; height: 100.0%;">     <div style="width:250px">          <h2>GHOOND</h2>          <hr>          <b>Total Records:</b>         0         <br><br>          <b>Male:</b>         0         <br><br>          <b>Female:</b>         0         <br><br>          <b>Average Age:</b>         0.0         <br>      </div>     </div>`)[0];
+                popup_f0b9be05dd421362e778cf2bcd3702bc.setContent(html_559f671ff1efa7e03d322adb9549ad6b);
+            
+        
+
+        circle_marker_854e285f920df149b1c4b85570d2454b.bindPopup(popup_f0b9be05dd421362e778cf2bcd3702bc)
+        ;
+
+        
+    
+    
+            circle_marker_854e285f920df149b1c4b85570d2454b.bindTooltip(
+                `<div>
+                     GHOOND
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_78f77d3d439b0801a43a26b146cd45f1 = L.circleMarker(
+                [31.097651, 77.3670897],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_218f5b201f8bfb55e01cc0be5b9afc17);
+        
+    
+        var popup_1112ba2800de66b1602b90c00a13a80a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_cb60116954a9762b794a15726f882369 = $(`<div id="html_cb60116954a9762b794a15726f882369" style="width: 100.0%; height: 100.0%;">     <div style="width:250px">          <h2>JAIS</h2>          <hr>          <b>Total Records:</b>         0         <br><br>          <b>Male:</b>         0         <br><br>          <b>Female:</b>         0         <br><br>          <b>Average Age:</b>         0.0         <br>      </div>     </div>`)[0];
+                popup_1112ba2800de66b1602b90c00a13a80a.setContent(html_cb60116954a9762b794a15726f882369);
+            
+        
+
+        circle_marker_78f77d3d439b0801a43a26b146cd45f1.bindPopup(popup_1112ba2800de66b1602b90c00a13a80a)
+        ;
+
+        
+    
+    
+            circle_marker_78f77d3d439b0801a43a26b146cd45f1.bindTooltip(
+                `<div>
+                     JAIS
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6f1c2baf2ca6cf508059c349df101c32 = L.circleMarker(
+                [31.1999599, 77.4309943],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_218f5b201f8bfb55e01cc0be5b9afc17);
+        
+    
+        var popup_6d610f07551eceffc8baa27c65e35558 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_86f78457033cbb0fe1373d87c514da61 = $(`<div id="html_86f78457033cbb0fe1373d87c514da61" style="width: 100.0%; height: 100.0%;">     <div style="width:250px">          <h2>KOT SHILARU</h2>          <hr>          <b>Total Records:</b>         0         <br><br>          <b>Male:</b>         0         <br><br>          <b>Female:</b>         0         <br><br>          <b>Average Age:</b>         0.0         <br>      </div>     </div>`)[0];
+                popup_6d610f07551eceffc8baa27c65e35558.setContent(html_86f78457033cbb0fe1373d87c514da61);
+            
+        
+
+        circle_marker_6f1c2baf2ca6cf508059c349df101c32.bindPopup(popup_6d610f07551eceffc8baa27c65e35558)
+        ;
+
+        
+    
+    
+            circle_marker_6f1c2baf2ca6cf508059c349df101c32.bindTooltip(
+                `<div>
+                     KOT SHILARU
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ad5e6ed05fb44f6022e5d1b7152d2f68 = L.circleMarker(
+                [31.0049288, 77.4174613],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_218f5b201f8bfb55e01cc0be5b9afc17);
+        
+    
+        var popup_be2e740429e47ea1be086391b1ce43f8 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_538fd371ddd162b49c4872fa68c57160 = $(`<div id="html_538fd371ddd162b49c4872fa68c57160" style="width: 100.0%; height: 100.0%;">     <div style="width:250px">          <h2>KUTHAR</h2>          <hr>          <b>Total Records:</b>         0         <br><br>          <b>Male:</b>         0         <br><br>          <b>Female:</b>         0         <br><br>          <b>Average Age:</b>         0.0         <br>      </div>     </div>`)[0];
+                popup_be2e740429e47ea1be086391b1ce43f8.setContent(html_538fd371ddd162b49c4872fa68c57160);
+            
+        
+
+        circle_marker_ad5e6ed05fb44f6022e5d1b7152d2f68.bindPopup(popup_be2e740429e47ea1be086391b1ce43f8)
+        ;
+
+        
+    
+    
+            circle_marker_ad5e6ed05fb44f6022e5d1b7152d2f68.bindTooltip(
+                `<div>
+                     KUTHAR
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_88d76125c6f0f765ff26c031efa36592 = L.circleMarker(
+                [31.0175012, 77.428455],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_218f5b201f8bfb55e01cc0be5b9afc17);
+        
+    
+        var popup_6a7cc54224c530ff471d53aabf9e6d0c = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_99e057e811ffef1fb2020106680fa28d = $(`<div id="html_99e057e811ffef1fb2020106680fa28d" style="width: 100.0%; height: 100.0%;">     <div style="width:250px">          <h2>KYAR</h2>          <hr>          <b>Total Records:</b>         0         <br><br>          <b>Male:</b>         0         <br><br>          <b>Female:</b>         0         <br><br>          <b>Average Age:</b>         0.0         <br>      </div>     </div>`)[0];
+                popup_6a7cc54224c530ff471d53aabf9e6d0c.setContent(html_99e057e811ffef1fb2020106680fa28d);
+            
+        
+
+        circle_marker_88d76125c6f0f765ff26c031efa36592.bindPopup(popup_6a7cc54224c530ff471d53aabf9e6d0c)
+        ;
+
+        
+    
+    
+            circle_marker_88d76125c6f0f765ff26c031efa36592.bindTooltip(
+                `<div>
+                     KYAR
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_62160593be655433d7e4a6b7f5561ed5 = L.circleMarker(
+                [31.1457024, 77.4032199],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_218f5b201f8bfb55e01cc0be5b9afc17);
+        
+    
+        var popup_79460464789d820f945e19bab158d6a2 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_78f62f119917288bece9764ba647d3a9 = $(`<div id="html_78f62f119917288bece9764ba647d3a9" style="width: 100.0%; height: 100.0%;">     <div style="width:250px">          <h2>MAHOG</h2>          <hr>          <b>Total Records:</b>         0         <br><br>          <b>Male:</b>         0         <br><br>          <b>Female:</b>         0         <br><br>          <b>Average Age:</b>         0.0         <br>      </div>     </div>`)[0];
+                popup_79460464789d820f945e19bab158d6a2.setContent(html_78f62f119917288bece9764ba647d3a9);
+            
+        
+
+        circle_marker_62160593be655433d7e4a6b7f5561ed5.bindPopup(popup_79460464789d820f945e19bab158d6a2)
+        ;
+
+        
+    
+    
+            circle_marker_62160593be655433d7e4a6b7f5561ed5.bindTooltip(
+                `<div>
+                     MAHOG
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_51e3faf19588325a70d16f52c1a33043 = L.circleMarker(
+                [31.1663976, 77.4261917],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_218f5b201f8bfb55e01cc0be5b9afc17);
+        
+    
+        var popup_df9c045cad8fbd80fd4bb1a733b4059f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_03603a028c4f0538433a1780799d906e = $(`<div id="html_03603a028c4f0538433a1780799d906e" style="width: 100.0%; height: 100.0%;">     <div style="width:250px">          <h2>MAHORI</h2>          <hr>          <b>Total Records:</b>         0         <br><br>          <b>Male:</b>         0         <br><br>          <b>Female:</b>         0         <br><br>          <b>Average Age:</b>         0.0         <br>      </div>     </div>`)[0];
+                popup_df9c045cad8fbd80fd4bb1a733b4059f.setContent(html_03603a028c4f0538433a1780799d906e);
+            
+        
+
+        circle_marker_51e3faf19588325a70d16f52c1a33043.bindPopup(popup_df9c045cad8fbd80fd4bb1a733b4059f)
+        ;
+
+        
+    
+    
+            circle_marker_51e3faf19588325a70d16f52c1a33043.bindTooltip(
+                `<div>
+                     MAHORI
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9a8f5b67cb0919f5da203e9f23a3e42c = L.circleMarker(
+                [31.0289785, 77.3976409],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_218f5b201f8bfb55e01cc0be5b9afc17);
+        
+    
+        var popup_1c7c611683969b4830e9f62880d24b7c = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d9dd0e9e261edfd6d225c28fa6f997f4 = $(`<div id="html_d9dd0e9e261edfd6d225c28fa6f997f4" style="width: 100.0%; height: 100.0%;">     <div style="width:250px">          <h2>MUNDU</h2>          <hr>          <b>Total Records:</b>         0         <br><br>          <b>Male:</b>         0         <br><br>          <b>Female:</b>         0         <br><br>          <b>Average Age:</b>         0.0         <br>      </div>     </div>`)[0];
+                popup_1c7c611683969b4830e9f62880d24b7c.setContent(html_d9dd0e9e261edfd6d225c28fa6f997f4);
+            
+        
+
+        circle_marker_9a8f5b67cb0919f5da203e9f23a3e42c.bindPopup(popup_1c7c611683969b4830e9f62880d24b7c)
+        ;
+
+        
+    
+    
+            circle_marker_9a8f5b67cb0919f5da203e9f23a3e42c.bindTooltip(
+                `<div>
+                     MUNDU
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c512fb65c2d974cd989709c4f234417a = L.circleMarker(
+                [31.0214342, 77.3608357],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_218f5b201f8bfb55e01cc0be5b9afc17);
+        
+    
+        var popup_2273e9c434c4d61f9ae1b906ff194baf = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c2f4a0c25ecf11c87fdffc9d2d9a1615 = $(`<div id="html_c2f4a0c25ecf11c87fdffc9d2d9a1615" style="width: 100.0%; height: 100.0%;">     <div style="width:250px">          <h2>NAHOL</h2>          <hr>          <b>Total Records:</b>         0         <br><br>          <b>Male:</b>         0         <br><br>          <b>Female:</b>         0         <br><br>          <b>Average Age:</b>         0.0         <br>      </div>     </div>`)[0];
+                popup_2273e9c434c4d61f9ae1b906ff194baf.setContent(html_c2f4a0c25ecf11c87fdffc9d2d9a1615);
+            
+        
+
+        circle_marker_c512fb65c2d974cd989709c4f234417a.bindPopup(popup_2273e9c434c4d61f9ae1b906ff194baf)
+        ;
+
+        
+    
+    
+            circle_marker_c512fb65c2d974cd989709c4f234417a.bindTooltip(
+                `<div>
+                     NAHOL
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_cdb9e6fc9800ecdeb149afd80b54325a = L.circleMarker(
+                [31.0768705, 77.3887631],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_218f5b201f8bfb55e01cc0be5b9afc17);
+        
+    
+        var popup_9fb27202723b196cf3ba77542ee77209 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c068f4233e0f39c0bc0fe7e86166238a = $(`<div id="html_c068f4233e0f39c0bc0fe7e86166238a" style="width: 100.0%; height: 100.0%;">     <div style="width:250px">          <h2>SAINJ</h2>          <hr>          <b>Total Records:</b>         0         <br><br>          <b>Male:</b>         0         <br><br>          <b>Female:</b>         0         <br><br>          <b>Average Age:</b>         0.0         <br>      </div>     </div>`)[0];
+                popup_9fb27202723b196cf3ba77542ee77209.setContent(html_c068f4233e0f39c0bc0fe7e86166238a);
+            
+        
+
+        circle_marker_cdb9e6fc9800ecdeb149afd80b54325a.bindPopup(popup_9fb27202723b196cf3ba77542ee77209)
+        ;
+
+        
+    
+    
+            circle_marker_cdb9e6fc9800ecdeb149afd80b54325a.bindTooltip(
+                `<div>
+                     SAINJ
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_465638726cca7f7085af440ae23f36f4 = L.circleMarker(
+                [31.1559638, 77.3796771],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_218f5b201f8bfb55e01cc0be5b9afc17);
+        
+    
+        var popup_c419f3ac3eec6b3ca15b1b2ed33edb62 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_20e5880b1fe29905cbe4238c79d56cc0 = $(`<div id="html_20e5880b1fe29905cbe4238c79d56cc0" style="width: 100.0%; height: 100.0%;">     <div style="width:250px">          <h2>SANDHU</h2>          <hr>          <b>Total Records:</b>         0         <br><br>          <b>Male:</b>         0         <br><br>          <b>Female:</b>         0         <br><br>          <b>Average Age:</b>         0.0         <br>      </div>     </div>`)[0];
+                popup_c419f3ac3eec6b3ca15b1b2ed33edb62.setContent(html_20e5880b1fe29905cbe4238c79d56cc0);
+            
+        
+
+        circle_marker_465638726cca7f7085af440ae23f36f4.bindPopup(popup_c419f3ac3eec6b3ca15b1b2ed33edb62)
+        ;
+
+        
+    
+    
+            circle_marker_465638726cca7f7085af440ae23f36f4.bindTooltip(
+                `<div>
+                     SANDHU
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5f1e6145e913e9624f56f81504d2f08a = L.circleMarker(
+                [31.1374472, 77.3093963],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_218f5b201f8bfb55e01cc0be5b9afc17);
+        
+    
+        var popup_6f33b7dc12a36cff984c2c24670b885b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_183a7f52590b000bf1da42df6a13b9e8 = $(`<div id="html_183a7f52590b000bf1da42df6a13b9e8" style="width: 100.0%; height: 100.0%;">     <div style="width:250px">          <h2>SAROG</h2>          <hr>          <b>Total Records:</b>         0         <br><br>          <b>Male:</b>         0         <br><br>          <b>Female:</b>         0         <br><br>          <b>Average Age:</b>         0.0         <br>      </div>     </div>`)[0];
+                popup_6f33b7dc12a36cff984c2c24670b885b.setContent(html_183a7f52590b000bf1da42df6a13b9e8);
+            
+        
+
+        circle_marker_5f1e6145e913e9624f56f81504d2f08a.bindPopup(popup_6f33b7dc12a36cff984c2c24670b885b)
+        ;
+
+        
+    
+    
+            circle_marker_5f1e6145e913e9624f56f81504d2f08a.bindTooltip(
+                `<div>
+                     SAROG
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_49492126a8074160717b72eec5d97e9f = L.circleMarker(
+                [31.0143282, 77.313717],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_218f5b201f8bfb55e01cc0be5b9afc17);
+        
+    
+        var popup_dfa2e75574506f119688e702c67cee7e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_f315f0356bd4280afa035228a2f44bad = $(`<div id="html_f315f0356bd4280afa035228a2f44bad" style="width: 100.0%; height: 100.0%;">     <div style="width:250px">          <h2>SATOG</h2>          <hr>          <b>Total Records:</b>         0         <br><br>          <b>Male:</b>         0         <br><br>          <b>Female:</b>         0         <br><br>          <b>Average Age:</b>         0.0         <br>      </div>     </div>`)[0];
+                popup_dfa2e75574506f119688e702c67cee7e.setContent(html_f315f0356bd4280afa035228a2f44bad);
+            
+        
+
+        circle_marker_49492126a8074160717b72eec5d97e9f.bindPopup(popup_dfa2e75574506f119688e702c67cee7e)
+        ;
+
+        
+    
+    
+            circle_marker_49492126a8074160717b72eec5d97e9f.bindTooltip(
+                `<div>
+                     SATOG
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7c56894bda4f87a6a1cc7b6b26e50910 = L.circleMarker(
+                [31.1762999, 77.4549705],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_218f5b201f8bfb55e01cc0be5b9afc17);
+        
+    
+        var popup_5d465d4743b5eaef6898ddfcb4b02206 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_8580d89ceac0ad36992412844c7cf74e = $(`<div id="html_8580d89ceac0ad36992412844c7cf74e" style="width: 100.0%; height: 100.0%;">     <div style="width:250px">          <h2>SHARMLA</h2>          <hr>          <b>Total Records:</b>         0         <br><br>          <b>Male:</b>         0         <br><br>          <b>Female:</b>         0         <br><br>          <b>Average Age:</b>         0.0         <br>      </div>     </div>`)[0];
+                popup_5d465d4743b5eaef6898ddfcb4b02206.setContent(html_8580d89ceac0ad36992412844c7cf74e);
+            
+        
+
+        circle_marker_7c56894bda4f87a6a1cc7b6b26e50910.bindPopup(popup_5d465d4743b5eaef6898ddfcb4b02206)
+        ;
+
+        
+    
+    
+            circle_marker_7c56894bda4f87a6a1cc7b6b26e50910.bindTooltip(
+                `<div>
+                     SHARMLA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_73c62af6c34c4f73ad95b449c0b955b8 = L.circleMarker(
+                [30.9951668, 77.437939],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_218f5b201f8bfb55e01cc0be5b9afc17);
+        
+    
+        var popup_e34ceb51bcb6ebc9a486cd4f92afe39e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_6b1086dbc054c4821ead8fe1093ef0e4 = $(`<div id="html_6b1086dbc054c4821ead8fe1093ef0e4" style="width: 100.0%; height: 100.0%;">     <div style="width:250px">          <h2>TIKKER</h2>          <hr>          <b>Total Records:</b>         0         <br><br>          <b>Male:</b>         0         <br><br>          <b>Female:</b>         0         <br><br>          <b>Average Age:</b>         0.0         <br>      </div>     </div>`)[0];
+                popup_e34ceb51bcb6ebc9a486cd4f92afe39e.setContent(html_6b1086dbc054c4821ead8fe1093ef0e4);
+            
+        
+
+        circle_marker_73c62af6c34c4f73ad95b449c0b955b8.bindPopup(popup_e34ceb51bcb6ebc9a486cd4f92afe39e)
+        ;
+
+        
+    
+    
+            circle_marker_73c62af6c34c4f73ad95b449c0b955b8.bindTooltip(
+                `<div>
+                     TIKKER
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_844df51aedaaa9a4f8627b75be7d4e1d = L.circleMarker(
+                [31.1198874, 77.3636183],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.08, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_218f5b201f8bfb55e01cc0be5b9afc17);
+        
+    
+        var popup_5e513e3d23f2cfb7e4180276b40d414d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d02bc567eb177e0f6f3ad15eb305303d = $(`<div id="html_d02bc567eb177e0f6f3ad15eb305303d" style="width: 100.0%; height: 100.0%;">     <div style="width:250px">          <h2>URBANTHEOG</h2>          <hr>          <b>Total Records:</b>         808         <br><br>          <b>Male:</b>         431         <br><br>          <b>Female:</b>         377         <br><br>          <b>Average Age:</b>         54.2         <br>      </div>     </div>`)[0];
+                popup_5e513e3d23f2cfb7e4180276b40d414d.setContent(html_d02bc567eb177e0f6f3ad15eb305303d);
+            
+        
+
+        circle_marker_844df51aedaaa9a4f8627b75be7d4e1d.bindPopup(popup_5e513e3d23f2cfb7e4180276b40d414d)
+        ;
+
+        
+    
+    
+            circle_marker_844df51aedaaa9a4f8627b75be7d4e1d.bindTooltip(
+                `<div>
+                     URBANTHEOG
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            marker_cluster_218f5b201f8bfb55e01cc0be5b9afc17.addTo(map_cfcac9819f9354baf0801612b6ffe5a4);
+        
+</script>
+</html>
