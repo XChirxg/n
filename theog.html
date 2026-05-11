@@ -1,387 +1,879 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Theog Demographic Dashboard</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Theog Voter Data Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #161b27;
+    --surface2: #1e2535;
+    --border: #2a3347;
+    --accent: #4f8ef7;
+    --accent2: #e05c8a;
+    --accent3: #34d399;
+    --text: #e8edf5;
+    --muted: #7a8599;
+    --card-radius: 12px;
+    --font-sans: 'DM Sans', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    min-height: 100vh;
+    line-height: 1.6;
+  }
 
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  /* HEADER */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-icon { color: var(--accent); flex-shrink: 0; }
+  .header h1 { font-size: 17px; font-weight: 600; letter-spacing: -0.02em; }
+  .header p { font-size: 12px; color: var(--muted); margin-top: 1px; }
+  .header-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+  .status-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent3);
+    box-shadow: 0 0 0 3px rgba(52,211,153,0.18);
+  }
+  .status-dot.loading { background: #f59e0b; box-shadow: 0 0 0 3px rgba(245,158,11,0.18); }
+  .status-dot.error { background: var(--accent2); box-shadow: 0 0 0 3px rgba(224,92,138,0.18); }
+  #status-text { font-size: 12px; color: var(--muted); font-family: var(--font-mono); }
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+  /* LOADER */
+  .loader-overlay {
+    position: fixed; inset: 0; background: var(--bg);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 999; gap: 16px;
+  }
+  .spinner {
+    width: 36px; height: 36px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loader-overlay p { color: var(--muted); font-size: 13px; }
 
-    body {
-      margin: 0;
-      padding: 20px;
-      background: #0f172a;
-      color: white;
-      font-family: Arial, sans-serif;
-    }
+  /* MAIN */
+  .main { padding: 20px; max-width: 1400px; margin: 0 auto; }
 
-    h1 {
-      margin-top: 0;
-      font-size: 2rem;
-    }
+  /* STAT CARDS */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--card-radius);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .stat-label {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .stat-label svg { flex-shrink: 0; }
+  .stat-value { font-size: 26px; font-weight: 600; font-family: var(--font-mono); letter-spacing: -0.02em; }
+  .stat-value.blue { color: var(--accent); }
+  .stat-value.pink { color: var(--accent2); }
+  .stat-value.green { color: var(--accent3); }
+  .stat-value.orange { color: #f59e0b; }
+  .stat-sub { font-size: 11px; color: var(--muted); }
 
-    .topbar {
-      background: #1e293b;
-      padding: 20px;
-      border-radius: 16px;
-      margin-bottom: 20px;
-    }
+  /* FILTERS */
+  .filters-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--card-radius);
+    padding: 14px 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .filter-group { display: flex; flex-direction: column; gap: 4px; }
+  .filter-group label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  input[type="text"], input[type="number"], select {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    padding: 7px 10px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  input[type="text"]:focus, input[type="number"]:focus, select:focus { border-color: var(--accent); }
+  .age-range-wrap { display: flex; align-items: center; gap: 6px; }
+  .age-range-wrap span { color: var(--muted); font-size: 12px; }
+  input[type="number"] { width: 72px; }
+  select { min-width: 130px; }
+  .search-wrap { position: relative; }
+  .search-wrap input { padding-left: 30px; min-width: 200px; }
+  .search-icon { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+  .btn-reset {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    padding: 7px 12px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 14px;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .btn-reset:hover { border-color: var(--accent2); color: var(--accent2); }
 
-    input,
-    select {
-      padding: 12px;
-      border-radius: 10px;
-      border: none;
-      background: #334155;
-      color: white;
-      margin-right: 10px;
-      margin-top: 10px;
-      font-size: 15px;
-    }
+  /* SECTION LABEL */
+  .section-label {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
-      margin-bottom: 20px;
-    }
+  /* CHARTS */
+  .charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  .chart-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--card-radius);
+    padding: 16px;
+  }
+  .chart-title { font-size: 12px; font-weight: 500; color: var(--muted); margin-bottom: 12px; display: flex; align-items: center; gap: 7px; }
+  .chart-title span { color: var(--text); }
+  .chart-wrap { position: relative; }
 
-    .card {
-      background: #1e293b;
-      padding: 20px;
-      border-radius: 16px;
-    }
+  /* VILLAGE TABLE */
+  .village-section { margin-bottom: 20px; }
+  .village-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 12px;
+  }
+  .village-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--card-radius);
+    padding: 14px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .village-card:hover { border-color: var(--accent); background: var(--surface2); }
+  .village-card.active { border-color: var(--accent); background: var(--surface2); }
+  .village-name { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+  .village-meta { display: flex; flex-wrap: wrap; gap: 8px; }
+  .badge {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    padding: 3px 8px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .badge-blue { background: rgba(79,142,247,0.13); color: var(--accent); }
+  .badge-pink { background: rgba(224,92,138,0.13); color: var(--accent2); }
+  .badge-green { background: rgba(52,211,153,0.13); color: var(--accent3); }
+  .badge-orange { background: rgba(245,158,11,0.13); color: #f59e0b; }
+  .badge-muted { background: var(--surface2); color: var(--muted); }
 
-    .card h2 {
-      margin: 0;
-      font-size: 2rem;
-    }
+  /* GENDER BAR */
+  .gender-bar-wrap { margin-top: 10px; }
+  .gender-bar {
+    height: 4px; border-radius: 2px;
+    background: var(--border);
+    overflow: hidden;
+    margin-top: 4px;
+  }
+  .gender-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--accent) var(--male-pct), var(--accent2) var(--male-pct));
+  }
+  .gender-bar-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); margin-top: 3px; font-family: var(--font-mono); }
 
-    .card p {
-      margin: 5px 0 0;
-      color: #94a3b8;
-    }
+  /* DATA TABLE */
+  .table-section { margin-bottom: 20px; }
+  .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px; }
+  .record-count { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+  .record-count strong { color: var(--accent); }
+  .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--card-radius);
+    overflow: auto;
+    max-height: 480px;
+  }
+  table { width: 100%; border-collapse: collapse; min-width: 700px; }
+  thead { position: sticky; top: 0; background: var(--surface2); z-index: 1; }
+  th {
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+  }
+  th:hover { color: var(--text); }
+  th .sort-icon { opacity: 0.4; margin-left: 4px; }
+  th.sorted .sort-icon { opacity: 1; color: var(--accent); }
+  td {
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    vertical-align: middle;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--surface2); }
+  .gender-pill {
+    display: inline-block;
+    font-size: 10px;
+    font-family: var(--font-mono);
+    padding: 2px 7px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+  .gender-m { background: rgba(79,142,247,0.15); color: var(--accent); }
+  .gender-f { background: rgba(224,92,138,0.15); color: var(--accent2); }
+  .voter-id { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+  .age-chip { font-family: var(--font-mono); }
 
-    .chart-container {
-      background: white;
-      border-radius: 16px;
-      padding: 20px;
-      height: 700px;
-    }
+  /* PAGINATION */
+  .pagination { display: flex; gap: 6px; align-items: center; justify-content: flex-end; margin-top: 12px; flex-wrap: wrap; }
+  .page-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    padding: 5px 10px;
+    transition: all 0.15s;
+    min-width: 32px;
+    text-align: center;
+  }
+  .page-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .page-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .page-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 
-    .info {
-      color: #cbd5e1;
-      margin-top: 10px;
-      line-height: 1.7;
-    }
-  </style>
+  /* HOUSE STATS */
+  .house-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .house-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--card-radius);
+    padding: 14px;
+  }
+  .house-title { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+  .house-row {
+    display: flex; justify-content: space-between;
+    font-size: 12px;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .house-row:last-child { border-bottom: none; }
+  .house-no-label { font-family: var(--font-mono); color: var(--accent); }
+  .house-count { font-family: var(--font-mono); font-weight: 500; }
+
+  /* ERROR */
+  .error-box {
+    background: rgba(224,92,138,0.08);
+    border: 1px solid rgba(224,92,138,0.3);
+    border-radius: var(--card-radius);
+    padding: 24px;
+    text-align: center;
+    color: var(--accent2);
+    margin: 40px 0;
+  }
+  .error-box svg { margin-bottom: 12px; display: block; margin-left: auto; margin-right: auto; }
+  .error-box p { font-size: 13px; color: var(--muted); margin-top: 6px; }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    .header { padding: 14px 16px; }
+    .main { padding: 14px; }
+    .filters-bar { gap: 8px; }
+    .stat-grid { grid-template-columns: repeat(2, 1fr); }
+    .charts-grid { grid-template-columns: 1fr; }
+    .village-grid { grid-template-columns: 1fr; }
+    input[type="text"], select { font-size: 16px; } /* prevent zoom on iOS */
+  }
+</style>
 </head>
 <body>
 
-  <div class="topbar">
-    <h1>Theog Demographic Pyramid Dashboard</h1>
+<!-- LOADER -->
+<div class="loader-overlay" id="loader">
+  <div class="spinner"></div>
+  <p>Loading voter data...</p>
+</div>
 
-    <input type="file" id="csvFile" accept=".csv" />
+<!-- HEADER -->
+<div class="header">
+  <div class="header-icon">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+    </svg>
+  </div>
+  <div>
+    <h1>Theog Voter Dashboard</h1>
+    <p>Panchayat Electoral Roll — Shimla District</p>
+  </div>
+  <div class="header-right">
+    <div class="status-dot loading" id="status-dot"></div>
+    <span id="status-text">Fetching...</span>
+  </div>
+</div>
 
-    <select id="villageSelect">
-      <option value="ALL">Whole Theog</option>
-    </select>
+<div class="main" id="app" style="display:none">
 
-    <div class="info">
-      Upload your electoral CSV file.
-      <br>
-      This dashboard automatically creates:
-      <br>
-      • Population pyramids
-      <br>
-      • Village-wise demographics
-      <br>
-      • Gender distribution
-      <br>
-      • Age group analysis
+  <!-- STAT CARDS -->
+  <div class="stat-grid" id="stat-grid">
+    <div class="stat-card">
+      <div class="stat-label">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Total Voters
+      </div>
+      <div class="stat-value blue" id="s-total">—</div>
+      <div class="stat-sub">all records</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        Male
+      </div>
+      <div class="stat-value blue" id="s-male">—</div>
+      <div class="stat-sub" id="s-male-pct"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        Female
+      </div>
+      <div class="stat-value pink" id="s-female">—</div>
+      <div class="stat-sub" id="s-female-pct"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Houses
+      </div>
+      <div class="stat-value green" id="s-houses">—</div>
+      <div class="stat-sub" id="s-houses-sub"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Avg Age
+      </div>
+      <div class="stat-value orange" id="s-avgage">—</div>
+      <div class="stat-sub" id="s-age-range"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        Villages
+      </div>
+      <div class="stat-value green" id="s-villages">—</div>
+      <div class="stat-sub" id="s-blocks"></div>
     </div>
   </div>
 
-  <div class="stats">
-    <div class="card">
-      <h2 id="totalPopulation">0</h2>
-      <p>Total Population</p>
+  <!-- FILTERS -->
+  <div class="filters-bar">
+    <div class="filter-group">
+      <label>Search name / voter ID</label>
+      <div class="search-wrap">
+        <svg class="search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="search" placeholder="Name or Voter ID...">
+      </div>
     </div>
-
-    <div class="card">
-      <h2 id="maleCount">0</h2>
-      <p>Male</p>
+    <div class="filter-group">
+      <label>Gender</label>
+      <select id="f-gender">
+        <option value="">All</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+      </select>
     </div>
-
-    <div class="card">
-      <h2 id="femaleCount">0</h2>
-      <p>Female</p>
+    <div class="filter-group">
+      <label>Panchayat</label>
+      <select id="f-panchayat"><option value="">All</option></select>
     </div>
+    <div class="filter-group">
+      <label>Ward / Village</label>
+      <select id="f-ward"><option value="">All</option></select>
+    </div>
+    <div class="filter-group">
+      <label>Age range</label>
+      <div class="age-range-wrap">
+        <input type="number" id="f-age-min" placeholder="Min" min="0" max="150">
+        <span>—</span>
+        <input type="number" id="f-age-max" placeholder="Max" min="0" max="150">
+      </div>
+    </div>
+    <button class="btn-reset" onclick="resetFilters()">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.19"/></svg>
+      Reset
+    </button>
+  </div>
 
-    <div class="card">
-      <h2 id="avgAge">0</h2>
-      <p>Average Age</p>
+  <!-- CHARTS -->
+  <div class="section-label">Analytics</div>
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg><span>Gender Breakdown</span></div>
+      <div class="chart-wrap" style="height:200px"><canvas id="chart-gender"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span>Age Distribution</span></div>
+      <div class="chart-wrap" style="height:200px"><canvas id="chart-age"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Voters per Village</span></div>
+      <div class="chart-wrap" style="height:200px"><canvas id="chart-village"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span>Age by Gender</span></div>
+      <div class="chart-wrap" style="height:200px"><canvas id="chart-age-gender"></canvas></div>
     </div>
   </div>
 
-  <div class="chart-container">
-    <canvas id="pyramidChart"></canvas>
+  <!-- VILLAGE CARDS -->
+  <div class="section-label">Village Summary</div>
+  <div class="village-grid" id="village-grid"></div>
+
+  <!-- HOUSE STATS -->
+  <div class="section-label" style="margin-top:20px">House Occupancy</div>
+  <div class="house-stats-grid" id="house-stats-grid"></div>
+
+  <!-- TABLE -->
+  <div class="section-label" style="margin-top:8px">Voter Records</div>
+  <div class="table-section">
+    <div class="table-header">
+      <div class="record-count">Showing <strong id="showing-count">—</strong> of <strong id="total-count">—</strong> records</div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th onclick="sortBy('serial_no')">#<span class="sort-icon" id="sort-serial_no">↕</span></th>
+            <th onclick="sortBy('name')">Name<span class="sort-icon" id="sort-name">↕</span></th>
+            <th onclick="sortBy('age')">Age<span class="sort-icon" id="sort-age">↕</span></th>
+            <th>Gender</th>
+            <th>Voter ID</th>
+            <th>House</th>
+            <th>Village</th>
+            <th>Relation</th>
+          </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+    <div class="pagination" id="pagination"></div>
   </div>
 
-  <script>
+</div>
 
-    const ageGroups = [
-      '0-4','5-9','10-14','15-19','20-24','25-29','30-34','35-39',
-      '40-44','45-49','50-54','55-59','60-64','65-69','70-74','75-79',
-      '80-84','85-89','90-94','95-99','100+'
-    ];
+<script>
+const CSV_URL_DIRECT = "https://raw.githubusercontent.com/XChirxg/n/d77b591b6384ad9b36fbef3e82b23645ac3a6f3e/theogdata.csv";
+const CSV_URL_PROXY  = "https://corsproxy.io/?" + encodeURIComponent(CSV_URL_DIRECT);
 
-    let allRows = [];
-    let pyramidChart = null;
+let allData = [];
+let filtered = [];
+let sortCol = 'serial_no';
+let sortDir = 1;
+let page = 1;
+const PAGE_SIZE = 50;
 
-    const villageSelect = document.getElementById('villageSelect');
+let charts = {};
 
-    document.getElementById('csvFile').addEventListener('change', function(e) {
+const $ = id => document.getElementById(id);
+const fmt = n => n?.toLocaleString('en-IN') ?? '—';
 
-      const file = e.target.files[0];
+async function init() {
+  try {
+    const res = await fetch(CSV_URL);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const text = await res.text();
+    const parsed = Papa.parse(text, { header: true, skipEmptyLines: true, dynamicTyping: false });
+    allData = parsed.data.map(r => ({
+      district: r.district?.trim() || '',
+      block: r.block?.trim() || '',
+      panchayat: r.panchayat?.trim() || '',
+      ward_number: r.ward_number?.trim() || '',
+      ward_name: r.ward_name?.trim() || '',
+      serial_no: parseInt(r.serial_no) || 0,
+      voter_id: r.voter_id?.trim() || '',
+      name: r.name?.trim() || '',
+      relation_type: r.relation_type?.trim() || '',
+      relation_name: r.relation_name?.trim() || '',
+      age: parseInt(r.age) || 0,
+      gender: r.gender?.trim() || '',
+      house_no: r.house_no?.trim() || '',
+    })).filter(r => r.name);
 
-      if (!file) return;
+    $('status-dot').classList.remove('loading');
+    $('status-dot').classList.add('');
+    $('status-text').textContent = fmt(allData.length) + ' records';
+    $('loader').style.display = 'none';
+    $('app').style.display = '';
 
-      Papa.parse(file, {
-        header: true,
-        skipEmptyLines: true,
-        complete: function(results) {
+    populateFilterOptions();
+    applyFilters();
+    buildCharts();
 
-          allRows = results.data;
+  } catch(e) {
+    $('loader').innerHTML = `<div class="error-box" style="max-width:400px">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <strong>Failed to load data</strong>
+      <p>${e.message}</p>
+      <p>Check that the CSV URL is correct and publicly accessible.</p>
+    </div>`;
+    $('status-dot').className = 'status-dot error';
+    $('status-text').textContent = 'Error';
+  }
+}
 
-          populateVillageDropdown();
+function populateFilterOptions() {
+  const panchayats = [...new Set(allData.map(r => r.panchayat))].filter(Boolean).sort();
+  const wards = [...new Set(allData.map(r => r.ward_name))].filter(Boolean).sort();
+  const fp = $('f-panchayat');
+  panchayats.forEach(p => { const o = document.createElement('option'); o.value = p; o.textContent = p; fp.appendChild(o); });
+  const fw = $('f-ward');
+  wards.forEach(w => { const o = document.createElement('option'); o.value = w; o.textContent = w; fw.appendChild(o); });
+}
 
-          renderVillage('ALL');
-        }
-      });
-    });
+function applyFilters() {
+  const search = $('search').value.trim().toLowerCase();
+  const gender = $('f-gender').value;
+  const panchayat = $('f-panchayat').value;
+  const ward = $('f-ward').value;
+  const ageMin = parseInt($('f-age-min').value) || 0;
+  const ageMax = parseInt($('f-age-max').value) || 999;
 
-    villageSelect.addEventListener('change', function() {
-      renderVillage(this.value);
-    });
+  filtered = allData.filter(r => {
+    if (search && !r.name.toLowerCase().includes(search) && !r.voter_id.toLowerCase().includes(search)) return false;
+    if (gender && r.gender !== gender) return false;
+    if (panchayat && r.panchayat !== panchayat) return false;
+    if (ward && r.ward_name !== ward) return false;
+    if (r.age < ageMin || r.age > ageMax) return false;
+    return true;
+  });
 
-    function populateVillageDropdown() {
+  page = 1;
+  updateStats();
+  updateVillageCards();
+  updateHouseStats();
+  updateTable();
+  updateCharts();
+}
 
-      const villages = new Set();
+function updateStats() {
+  const d = filtered;
+  const male = d.filter(r => r.gender === 'Male').length;
+  const female = d.filter(r => r.gender === 'Female').length;
+  const houses = new Set(d.map(r => r.ward_name + '|' + r.house_no)).size;
+  const ages = d.map(r => r.age).filter(a => a > 0);
+  const avgAge = ages.length ? Math.round(ages.reduce((a,b)=>a+b,0)/ages.length) : 0;
+  const villages = new Set(d.map(r => r.ward_name)).size;
+  const blocks = new Set(d.map(r => r.block)).size;
 
-      allRows.forEach(row => {
+  $('s-total').textContent = fmt(d.length);
+  $('s-male').textContent = fmt(male);
+  $('s-male-pct').textContent = d.length ? ((male/d.length)*100).toFixed(1)+'%' : '';
+  $('s-female').textContent = fmt(female);
+  $('s-female-pct').textContent = d.length ? ((female/d.length)*100).toFixed(1)+'%' : '';
+  $('s-houses').textContent = fmt(houses);
+  $('s-houses-sub').textContent = d.length ? 'avg '+((d.length/houses)||0).toFixed(1)+'/house' : '';
+  $('s-avgage').textContent = avgAge || '—';
+  $('s-age-range').textContent = ages.length ? `min ${Math.min(...ages)} · max ${Math.max(...ages)}` : '';
+  $('s-villages').textContent = fmt(villages);
+  $('s-blocks').textContent = blocks+' block'+(blocks!==1?'s':'');
+}
 
-        const village = (
-          row.panchayat ||
-          row.village ||
-          row.ward_name ||
-          'Unknown'
-        ).trim();
+function updateVillageCards() {
+  const villageMap = {};
+  filtered.forEach(r => {
+    const key = r.ward_name || 'Unknown';
+    if (!villageMap[key]) villageMap[key] = { name: key, panchayat: r.panchayat, total:0, male:0, female:0, houses: new Set(), ages:[] };
+    villageMap[key].total++;
+    if (r.gender==='Male') villageMap[key].male++;
+    else if (r.gender==='Female') villageMap[key].female++;
+    if (r.house_no) villageMap[key].houses.add(r.house_no);
+    if (r.age>0) villageMap[key].ages.push(r.age);
+  });
 
-        if (village) {
-          villages.add(village);
-        }
-      });
+  const grid = $('village-grid');
+  grid.innerHTML = '';
+  Object.values(villageMap).sort((a,b)=>b.total-a.total).forEach(v => {
+    const malePct = v.total ? ((v.male/v.total)*100).toFixed(0) : 0;
+    const ages = v.ages;
+    const avgA = ages.length ? Math.round(ages.reduce((a,b)=>a+b,0)/ages.length) : 0;
+    const card = document.createElement('div');
+    card.className = 'village-card';
+    card.innerHTML = `
+      <div class="village-name">${v.name}</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:8px">${v.panchayat}</div>
+      <div class="village-meta">
+        <span class="badge badge-blue"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>${v.total} voters</span>
+        <span class="badge badge-green"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>${v.houses.size} houses</span>
+        <span class="badge badge-orange"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>avg ${avgA}y</span>
+        ${ages.length ? `<span class="badge badge-muted">min ${Math.min(...ages)} · max ${Math.max(...ages)}</span>` : ''}
+      </div>
+      <div class="gender-bar-wrap">
+        <div class="gender-bar"><div class="gender-bar-fill" style="--male-pct:${malePct}%"></div></div>
+        <div class="gender-bar-labels"><span><svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor" style="color:var(--accent)"><circle cx="12" cy="12" r="10"/></svg> M ${v.male}</span><span>F ${v.female} <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor" style="color:var(--accent2)"><circle cx="12" cy="12" r="10"/></svg></span></div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
 
-      villageSelect.innerHTML = '<option value="ALL">Whole Theog</option>';
+function updateHouseStats() {
+  const houseMap = {};
+  filtered.forEach(r => {
+    const key = (r.ward_name||'?') + '|' + (r.house_no||'?');
+    if (!houseMap[key]) houseMap[key] = { village: r.ward_name, house: r.house_no, count: 0 };
+    houseMap[key].count++;
+  });
 
-      [...villages].sort().forEach(village => {
+  const villageHouses = {};
+  Object.values(houseMap).forEach(h => {
+    if (!villageHouses[h.village]) villageHouses[h.village] = [];
+    villageHouses[h.village].push({ house: h.house, count: h.count });
+  });
 
-        const option = document.createElement('option');
+  const grid = $('house-stats-grid');
+  grid.innerHTML = '';
+  Object.entries(villageHouses).sort((a,b)=>a[0].localeCompare(b[0])).forEach(([village, houses]) => {
+    const sorted = houses.sort((a,b)=>b.count-a.count);
+    const maxO = Math.max(...sorted.map(h=>h.count));
+    const minO = Math.min(...sorted.map(h=>h.count));
+    const card = document.createElement('div');
+    card.className = 'house-card';
+    card.innerHTML = `<div class="house-title"><strong>${village}</strong> — ${sorted.length} houses &nbsp;·&nbsp; max ${maxO}/house · min ${minO}/house</div>
+      ${sorted.slice(0,8).map(h=>`<div class="house-row"><span class="house-no-label">House ${h.house}</span><span class="house-count">${h.count} voter${h.count!==1?'s':''}</span></div>`).join('')}
+      ${sorted.length>8?`<div style="font-size:11px;color:var(--muted);padding-top:6px">+${sorted.length-8} more houses</div>`:''}`;
+    grid.appendChild(card);
+  });
+}
 
-        option.value = village;
-        option.textContent = village;
+function sortBy(col) {
+  if (sortCol === col) sortDir *= -1;
+  else { sortCol = col; sortDir = 1; }
+  document.querySelectorAll('.sort-icon').forEach(el => el.textContent = '↕');
+  const el = $('sort-'+col);
+  if (el) el.textContent = sortDir===1 ? '↑' : '↓';
+  document.querySelectorAll('th').forEach(th => th.classList.remove('sorted'));
+  const th = document.querySelector(`th[onclick="sortBy('${col}')"]`);
+  if (th) th.classList.add('sorted');
+  updateTable();
+}
 
-        villageSelect.appendChild(option);
-      });
-    }
+function updateTable() {
+  const sorted = [...filtered].sort((a,b) => {
+    let av = a[sortCol], bv = b[sortCol];
+    if (typeof av === 'number') return (av-bv)*sortDir;
+    return String(av).localeCompare(String(bv))*sortDir;
+  });
 
-    function renderVillage(selectedVillage) {
+  const total = sorted.length;
+  const pages = Math.ceil(total/PAGE_SIZE);
+  const slice = sorted.slice((page-1)*PAGE_SIZE, page*PAGE_SIZE);
 
-      let rows = allRows;
+  $('total-count').textContent = fmt(total);
+  $('showing-count').textContent = fmt(slice.length);
 
-      if (selectedVillage !== 'ALL') {
+  const tbody = $('table-body');
+  tbody.innerHTML = slice.map(r => `
+    <tr>
+      <td class="voter-id">${r.serial_no||'—'}</td>
+      <td style="font-weight:500">${r.name||'—'}</td>
+      <td class="age-chip">${r.age||'—'}</td>
+      <td><span class="gender-pill ${r.gender==='Male'?'gender-m':'gender-f'}">${r.gender||'—'}</span></td>
+      <td class="voter-id">${r.voter_id||'—'}</td>
+      <td class="voter-id">${r.house_no||'—'}</td>
+      <td>${r.ward_name||'—'}</td>
+      <td style="color:var(--muted)">${r.relation_type||''} ${r.relation_name||''}</td>
+    </tr>`).join('');
 
-        rows = rows.filter(row => {
+  // Pagination
+  const pag = $('pagination');
+  pag.innerHTML = '';
+  if (pages <= 1) return;
+  const addBtn = (label, p, active, disabled) => {
+    const b = document.createElement('button');
+    b.className = 'page-btn' + (active?' active':'');
+    b.textContent = label;
+    if (disabled) b.disabled = true;
+    else b.onclick = () => { page = p; updateTable(); };
+    pag.appendChild(b);
+  };
+  addBtn('‹', page-1, false, page===1);
+  const range = [];
+  if (pages<=7) for(let i=1;i<=pages;i++) range.push(i);
+  else {
+    range.push(1);
+    if (page>3) range.push('...');
+    for(let i=Math.max(2,page-1);i<=Math.min(pages-1,page+1);i++) range.push(i);
+    if (page<pages-2) range.push('...');
+    range.push(pages);
+  }
+  range.forEach(r => {
+    if (r==='...') { const s=document.createElement('span'); s.textContent='…'; s.style.cssText='color:var(--muted);padding:0 4px'; pag.appendChild(s); }
+    else addBtn(r, r, r===page, false);
+  });
+  addBtn('›', page+1, false, page===pages);
+}
 
-          const village = (
-            row.panchayat ||
-            row.village ||
-            row.ward_name ||
-            'Unknown'
-          ).trim();
+function buildCharts() {
+  const cfg = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: '#7a8599', font: { family: 'DM Sans', size: 11 }, boxWidth: 10, padding: 14 } } },
+  };
+  const axCfg = c => ({ color: '#7a8599', grid: { color: 'rgba(42,51,71,0.8)' }, ticks: { color: '#7a8599', font: { family: 'DM Mono', size: 10 }, ...c } });
 
-          return village === selectedVillage;
-        });
-      }
+  charts.gender = new Chart($('chart-gender'), {
+    type: 'doughnut',
+    data: { labels: ['Male','Female'], datasets: [{ data: [0,0], backgroundColor: ['#4f8ef7','#e05c8a'], borderWidth: 0, hoverOffset: 4 }] },
+    options: { ...cfg, cutout: '65%' }
+  });
 
-      updateStats(rows);
+  charts.age = new Chart($('chart-age'), {
+    type: 'bar',
+    data: { labels: [], datasets: [{ label: 'Voters', data: [], backgroundColor: '#4f8ef744', borderColor: '#4f8ef7', borderWidth: 1.5, borderRadius: 4 }] },
+    options: { ...cfg, plugins: { ...cfg.plugins, legend: { display: false } }, scales: { x: axCfg(), y: { ...axCfg(), beginAtZero: true } } }
+  });
 
-      buildPopulationPyramid(rows, selectedVillage);
-    }
+  charts.village = new Chart($('chart-village'), {
+    type: 'bar',
+    data: { labels: [], datasets: [{ label: 'Voters', data: [], backgroundColor: '#34d39944', borderColor: '#34d399', borderWidth: 1.5, borderRadius: 4 }] },
+    options: { ...cfg, indexAxis: 'y', plugins: { ...cfg.plugins, legend: { display: false } }, scales: { x: axCfg(), y: axCfg({ maxTicksLimit: 8 }) } }
+  });
 
-    function updateStats(rows) {
+  charts.ageGender = new Chart($('chart-age-gender'), {
+    type: 'bar',
+    data: {
+      labels: [],
+      datasets: [
+        { label: 'Male', data: [], backgroundColor: '#4f8ef766', borderColor: '#4f8ef7', borderWidth: 1.5, borderRadius: 4 },
+        { label: 'Female', data: [], backgroundColor: '#e05c8a66', borderColor: '#e05c8a', borderWidth: 1.5, borderRadius: 4 }
+      ]
+    },
+    options: { ...cfg, scales: { x: axCfg(), y: { ...axCfg(), beginAtZero: true, stacked: false } } }
+  });
 
-      let male = 0;
-      let female = 0;
-      let totalAge = 0;
-      let validAgeCount = 0;
+  updateCharts();
+}
 
-      rows.forEach(row => {
+function updateCharts() {
+  if (!charts.gender) return;
+  const d = filtered;
+  const male = d.filter(r=>r.gender==='Male').length;
+  const female = d.filter(r=>r.gender==='Female').length;
+  charts.gender.data.datasets[0].data = [male, female];
+  charts.gender.update('none');
 
-        const gender = (row.gender || '').toLowerCase();
+  // Age buckets
+  const buckets = {'0-17':0,'18-25':0,'26-35':0,'36-45':0,'46-60':0,'60+':0};
+  const mBuckets = {...buckets}; const fBuckets = {...buckets};
+  d.forEach(r => {
+    const a = r.age; let b;
+    if (a<18) b='0-17'; else if(a<=25) b='18-25'; else if(a<=35) b='26-35'; else if(a<=45) b='36-45'; else if(a<=60) b='46-60'; else b='60+';
+    buckets[b]++;
+    if (r.gender==='Male') mBuckets[b]++; else fBuckets[b]++;
+  });
+  charts.age.data.labels = Object.keys(buckets);
+  charts.age.data.datasets[0].data = Object.values(buckets);
+  charts.age.update('none');
 
-        if (gender.includes('male')) male++;
-        if (gender.includes('female')) female++;
+  charts.ageGender.data.labels = Object.keys(buckets);
+  charts.ageGender.data.datasets[0].data = Object.values(mBuckets);
+  charts.ageGender.data.datasets[1].data = Object.values(fBuckets);
+  charts.ageGender.update('none');
 
-        const age = parseInt(row.age);
+  // Village
+  const vm = {};
+  d.forEach(r => { vm[r.ward_name||'?'] = (vm[r.ward_name||'?']||0)+1; });
+  const vs = Object.entries(vm).sort((a,b)=>b[1]-a[1]).slice(0,12);
+  charts.village.data.labels = vs.map(v=>v[0]);
+  charts.village.data.datasets[0].data = vs.map(v=>v[1]);
+  charts.village.update('none');
+}
 
-        if (!isNaN(age)) {
-          totalAge += age;
-          validAgeCount++;
-        }
-      });
+function resetFilters() {
+  $('search').value=''; $('f-gender').value=''; $('f-panchayat').value=''; $('f-ward').value='';
+  $('f-age-min').value=''; $('f-age-max').value='';
+  applyFilters();
+}
 
-      document.getElementById('totalPopulation').textContent = rows.length.toLocaleString();
-      document.getElementById('maleCount').textContent = male.toLocaleString();
-      document.getElementById('femaleCount').textContent = female.toLocaleString();
+// Event listeners
+['search','f-gender','f-panchayat','f-ward','f-age-min','f-age-max'].forEach(id => {
+  const el = $(id);
+  el.addEventListener(id==='search'||id.startsWith('f-age')?'input':'change', applyFilters);
+});
 
-      const avgAge = validAgeCount
-        ? (totalAge / validAgeCount).toFixed(1)
-        : 0;
-
-      document.getElementById('avgAge').textContent = avgAge;
-    }
-
-    function getAgeGroup(age) {
-
-      if (age >= 100) return '100+';
-
-      const lower = Math.floor(age / 5) * 5;
-      const upper = lower + 4;
-
-      return `${lower}-${upper}`;
-    }
-
-    function buildPopulationPyramid(rows, title) {
-
-      const maleGroups = {};
-      const femaleGroups = {};
-
-      ageGroups.forEach(group => {
-        maleGroups[group] = 0;
-        femaleGroups[group] = 0;
-      });
-
-      rows.forEach(row => {
-
-        const age = parseInt(row.age);
-
-        if (isNaN(age)) return;
-
-        const group = getAgeGroup(age);
-
-        const gender = (row.gender || '').toLowerCase();
-
-        if (gender.includes('male')) {
-          maleGroups[group]++;
-        }
-        else if (gender.includes('female')) {
-          femaleGroups[group]++;
-        }
-      });
-
-      const totalPopulation = rows.length || 1;
-
-      const maleData = ageGroups.map(group => {
-        return -(maleGroups[group] / totalPopulation * 100).toFixed(2);
-      });
-
-      const femaleData = ageGroups.map(group => {
-        return +(femaleGroups[group] / totalPopulation * 100).toFixed(2);
-      });
-
-      const ctx = document.getElementById('pyramidChart').getContext('2d');
-
-      if (pyramidChart) {
-        pyramidChart.destroy();
-      }
-
-      pyramidChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: ageGroups,
-          datasets: [
-            {
-              label: 'Male',
-              data: maleData,
-              backgroundColor: '#4682B4'
-            },
-            {
-              label: 'Female',
-              data: femaleData,
-              backgroundColor: '#E5738A'
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          indexAxis: 'y',
-          plugins: {
-            title: {
-              display: true,
-              text: `Population Pyramid - ${title}`,
-              color: '#111827',
-              font: {
-                size: 24
-              }
-            },
-            legend: {
-              labels: {
-                color: '#111827'
-              }
-            },
-            tooltip: {
-              callbacks: {
-                label: function(context) {
-                  return `${context.dataset.label}: ${Math.abs(context.raw)}%`;
-                }
-              }
-            }
-          },
-          scales: {
-            x: {
-              ticks: {
-                callback: function(value) {
-                  return Math.abs(value) + '%';
-                },
-                color: '#111827'
-              },
-              grid: {
-                color: '#d1d5db'
-              }
-            },
-            y: {
-              ticks: {
-                color: '#111827'
-              },
-              grid: {
-                color: '#e5e7eb'
-              }
-            }
-          }
-        }
-      });
-    }
-
-  </script>
-
+init();
+</script>
 </body>
 </html>
