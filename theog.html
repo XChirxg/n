@@ -552,9 +552,16 @@ const fmt = n => n?.toLocaleString('en-IN') ?? '—';
 
 async function init() {
   try {
-    const res = await fetch(CSV_URL);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const text = await res.text();
+    let text;
+    try {
+      const res = await fetch(CSV_URL_DIRECT);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      text = await res.text();
+    } catch(corsErr) {
+      const res2 = await fetch(CSV_URL_PROXY);
+      if (!res2.ok) throw new Error(`HTTP ${res2.status} via proxy`);
+      text = await res2.text();
+    }
     const parsed = Papa.parse(text, { header: true, skipEmptyLines: true, dynamicTyping: false });
     allData = parsed.data.map(r => ({
       district: r.district?.trim() || '',
@@ -573,7 +580,6 @@ async function init() {
     })).filter(r => r.name);
 
     $('status-dot').classList.remove('loading');
-    $('status-dot').classList.add('');
     $('status-text').textContent = fmt(allData.length) + ' records';
     $('loader').style.display = 'none';
     $('app').style.display = '';
