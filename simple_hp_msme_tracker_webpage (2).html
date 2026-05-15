@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HP MSME Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen">
+
+  <div class="max-w-7xl mx-auto px-4 py-8">
+
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold">Himachal MSME Tracker</h1>
+      <p class="text-gray-600 mt-2">
+        Live MSME registrations from Government Open Data API.
+      </p>
+    </div>
+
+    <div class="bg-white border rounded-xl p-4 mb-6 flex items-center justify-between">
+      <div>
+        <p class="text-sm text-gray-500">Live latest MSME registrations in Himachal Pradesh</p>
+      </div>
+
+      <button
+        onclick="fetchData()"
+        class="bg-black text-white px-5 py-2 rounded-lg hover:opacity-90"
+      >
+        Refresh
+      </button>
+    </div>
+
+    <div class="bg-white border rounded-xl overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-gray-100 text-left">
+            <tr>
+              <th class="px-4 py-3">Business Name</th>
+              <th class="px-4 py-3">District</th>
+              <th class="px-4 py-3">Enterprise Type</th>
+              <th class="px-4 py-3">Major Activity</th>
+              <th class="px-4 py-3">Organization Type</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr>
+              <td colspan="5" class="px-4 py-8 text-center text-gray-500">
+                Loading data...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const API_KEY = '579b464db66ec23bdd000001cdd3946e44ce4aad7209ff7b23ac571b';
+
+    async function fetchData() {
+      const tableBody = document.getElementById('tableBody');
+
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="5" class="px-4 py-8 text-center text-gray-500">
+            Fetching latest MSME registrations...
+          </td>
+        </tr>
+      `;
+
+      try {
+        const apiUrl = `https://api.data.gov.in/resource/8b68ae56-84cf-4728-a0a6-1be11028dea7?api-key=${API_KEY}&format=json&limit=100&offset=0&filters[State]=Himachal Pradesh`;
+
+        const url = `https://api.allorigins.win/raw?url=${encodeURIComponent(apiUrl)}`;
+
+        const response = await fetch(url);
+        const data = await response.json();
+
+        console.log(data);
+
+        const records = data.records || [];
+
+        if (!records.length) {
+          tableBody.innerHTML = `
+            <tr>
+              <td colspan="5" class="px-4 py-8 text-center text-red-500">
+                No data found from API.
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        tableBody.innerHTML = records.map(item => `
+          <tr class="border-t hover:bg-gray-50">
+            <td class="px-4 py-3 font-medium">${item.enterprise_name || '-'}</td>
+            <td class="px-4 py-3">${item.district || '-'}</td>
+            <td class="px-4 py-3">${item.enterprise_type || '-'}</td>
+            <td class="px-4 py-3">${item.major_activity || '-'}</td>
+            <td class="px-4 py-3">${item.organization_type || '-'}</td>
+          </tr>
+        `).join('');
+
+      } catch (error) {
+        console.error(error);
+
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="5" class="px-4 py-8 text-center text-red-500">
+              Failed to fetch data from API. Government API may be blocking browser requests.
+            </td>
+          </tr>
+        `;
+      }
+    }
+
+    fetchData();
+  </script>
+
+</body>
+</html>
