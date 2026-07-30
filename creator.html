@@ -780,6 +780,35 @@
         @keyframes rotateIn { from { transform: rotate(-15deg) scale(0.5); opacity: 0; } to { transform: rotate(0deg) scale(1); opacity: 1; } }
         @keyframes rotateOut { from { transform: rotate(0deg) scale(1); opacity: 1; } to { transform: rotate(15deg) scale(0.5); opacity: 0; } }
 
+        #mobile-nav-bar {
+            display: none;
+        }
+
+        /* Immersive Full Display Mode styles */
+        body.full-display-mode #top-menu-bar,
+        body.full-display-mode #mobile-nav-bar,
+        body.full-display-mode #sidebar-right-container,
+        body.full-display-mode #toggle-sidebar-btn,
+        body.full-display-mode #timeline-window {
+            display: none !important;
+        }
+        body.full-display-mode #main-workspace {
+            height: 100dvh !important;
+            width: 100vw !important;
+        }
+        body.full-display-mode #workspace-container {
+            height: 100dvh !important;
+            width: 100vw !important;
+        }
+        
+        /* Mobile panels fullscreen class overrides */
+        #main-workspace.mobile-fullscreen #sidebar-right-container {
+            display: none !important;
+        }
+        #main-workspace.mobile-fullscreen #workspace-container {
+            height: calc(100dvh - 40px - 48px) !important;
+        }
+
         /* Responsive Mobile panels swiper layout */
         @media (max-width: 768px) {
             body {
@@ -797,10 +826,10 @@
             #sidebar-right-container {
                 width: 100vw !important;
                 min-width: 100vw !important;
-                height: 350px !important;
-                min-height: 350px !important;
+                height: 320px !important;
+                min-height: 320px !important;
                 border-left: none !important;
-                border-top: 1px solid #222 !important;
+                border-top: none !important;
                 position: relative !important;
                 bottom: auto !important;
                 left: auto !important;
@@ -845,6 +874,51 @@
                 height: 100% !important;
                 overflow: hidden !important;
             }
+            #mobile-nav-bar {
+                display: flex !important;
+                flex-direction: row !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 8px !important;
+                background: #111115 !important;
+                border-top: 1px solid #222 !important;
+                border-bottom: 1px solid #222 !important;
+                height: 48px !important;
+                min-height: 48px !important;
+                width: 100vw !important;
+                z-index: 140 !important;
+                padding: 0 10px !important;
+            }
+            .nav-circle {
+                width: 32px !important;
+                height: 32px !important;
+                border-radius: 50% !important;
+                background: #25252b !important;
+                border: 1px solid #3d3d45 !important;
+                color: #fff !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                cursor: pointer !important;
+                font-size: 13px !important;
+                transition: all 0.2s !important;
+            }
+            .nav-circle:hover, .nav-circle.active {
+                background: #ffd100 !important;
+                color: #000 !important;
+                border-color: #ffd100 !important;
+            }
+            .nav-circle.play-btn {
+                background: #ffd100 !important;
+                color: #000 !important;
+                border-color: #ffd100 !important;
+            }
+            .nav-divider {
+                width: 1px !important;
+                height: 20px !important;
+                background: #333 !important;
+                margin: 0 4px !important;
+            }
         }
     </style>
 </head>
@@ -867,12 +941,12 @@
                 <button onclick="toggleWindow('window-canvas')"><i class="fa-solid fa-eye" id="eye-window-canvas"></i> Canvas Panel</button>
                 <button onclick="toggleWindow('window-captions')"><i class="fa-solid fa-eye" id="eye-window-captions"></i> Captions Panel</button>
                 <button onclick="toggleWindow('window-json-prompt')"><i class="fa-solid fa-eye" id="eye-window-json-prompt"></i> JSON & Prompt Editor</button>
-                <button onclick="toggleWindow('window-transcribe')"><i class="fa-solid fa-eye" id="eye-window-transcribe"></i> Auto-Transcribe Panel</button>
                 <button onclick="toggleWindow('window-export')"><i class="fa-solid fa-eye" id="eye-window-export"></i> Export Video Panel</button>
                 <button onclick="toggleWindow('timeline-window')"><i class="fa-solid fa-eye" id="eye-timeline-window"></i> Timeline Panel</button>
                 <button onclick="toggleHotkeysHelp()"><i class="fa-solid fa-eye" id="eye-hotkeys-help"></i> Show Hotkeys Map</button>
             </div>
         </div>
+        <button onclick="copyPrompt()" style="background:#ffd100; color:#000; font-weight:800; border:none; padding:5px 12px; border-radius:4px; font-size:11px; margin-left:20px; cursor:pointer; display:flex; align-items:center; gap:6px;"><i class="fa-solid fa-copy"></i> Copy LLM Prompt</button>
     </div>
 
     <!-- Main split workspace -->
@@ -973,6 +1047,21 @@
             </div>
         </div>
 
+        <!-- Mobile Navigation bar (Shown on screen size <= 768px only) -->
+        <div id="mobile-nav-bar">
+            <button class="nav-circle play-btn" onclick="togglePlay()" id="mobile-play-btn"><i class="fa-solid fa-play"></i></button>
+            <div class="nav-divider"></div>
+            <button class="nav-circle" id="nav-btn-window-files" onclick="scrollToPanel(0)" title="Files & Transcribe"><i class="fa-solid fa-folder"></i></button>
+            <button class="nav-circle" id="nav-btn-window-canvas" onclick="scrollToPanel(1)" title="Canvas Settings"><i class="fa-solid fa-palette"></i></button>
+            <button class="nav-circle" id="nav-btn-window-captions" onclick="scrollToPanel(2)" title="Caption Styles"><i class="fa-solid fa-closed-captioning"></i></button>
+            <button class="nav-circle" id="nav-btn-window-json-prompt" onclick="scrollToPanel(3)" title="JSON & Prompt"><i class="fa-solid fa-code"></i></button>
+            <button class="nav-circle" id="nav-btn-window-export" onclick="scrollToPanel(4)" title="Export Video"><i class="fa-solid fa-file-video"></i></button>
+            <button class="nav-circle" id="nav-btn-timeline-window" onclick="scrollToPanel(5)" title="Timeline Slider"><i class="fa-solid fa-chart-simple"></i></button>
+            <div class="nav-divider"></div>
+            <button class="nav-circle" onclick="toggleMobileFullScreen()" id="mobile-fullscreen-btn" title="Focus Canvas"><i class="fa-solid fa-expand"></i></button>
+            <button class="nav-circle" onclick="enterFullDisplayMode()" title="Full Immersive Screen"><i class="fa-solid fa-tv"></i></button>
+        </div>
+
         <!-- Right Side Settings Panels -->
         <div id="sidebar-right-container">
             
@@ -1007,6 +1096,50 @@
                 <div class="form-group" style="flex-direction:row; align-items:center; gap: 8px;">
                     <input type="checkbox" id="project-autoload-toggle" onchange="saveState()" style="width:16px; height:16px;" checked>
                     <label style="cursor:pointer;" for="project-autoload-toggle">Auto-Load Last Project on Boot</label>
+                </div>
+                
+                <!-- AI Auto-Transcribe Sub-Section -->
+                <div style="border-top:1px solid #333; margin: 15px 0 0 0; padding-top: 15px;">
+                    <div class="panel-section-title">
+                        <span>AI Auto-Transcribe</span>
+                        <span id="transcribe-status" style="font-size:10px; color:#888;"><i class="fa-solid fa-circle" style="color:#555;"></i> Offline</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Whisper API Port / URL</label>
+                        <input type="text" id="transcribe-server-url" value="http://localhost:7860" onchange="saveState()">
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label>Model Size</label>
+                            <select id="transcribe-model-select">
+                                <option value="tiny">Tiny (Fast)</option>
+                                <option value="base" selected>Base (Balanced)</option>
+                                <option value="small">Small</option>
+                                <option value="medium">Medium</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label>Language</label>
+                            <select id="transcribe-lang-select">
+                                <option value="Auto-Detect" selected>Auto</option>
+                                <option value="Hindi">Hindi</option>
+                                <option value="English">English</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Quality & Accuracy Mode</label>
+                        <select id="transcribe-accuracy-select">
+                            <option value="Standard (Fast)" selected>Standard (Fast)</option>
+                            <option value="High Accuracy">High Accuracy</option>
+                            <option value="Maximum Accuracy">Maximum Accuracy</option>
+                        </select>
+                    </div>
+                    <button class="pro-btn" id="transcribe-btn" onclick="runAutoTranscribe()" style="background:#ffd100; color:#000; border-color:#ffd100; font-weight:700; width:100%; margin-bottom:8px;"><i class="fa-solid fa-wand-magic-sparkles"></i> Transcribe Audio</button>
+                    <div style="display:flex; gap:10px;">
+                        <button class="pro-btn" style="flex:1; padding: 4px 8px; font-size:10px;" onclick="downloadTranscriptJSON()"><i class="fa-solid fa-download"></i> JSON</button>
+                        <button class="pro-btn" style="flex:1; padding: 4px 8px; font-size:10px;" onclick="downloadTranscriptSRT()"><i class="fa-solid fa-download"></i> SRT</button>
+                    </div>
                 </div>
             </div>
 
@@ -1220,43 +1353,7 @@ Ensure you use all parameters (zoom, pan, rotation, custom HTML, and entry/exit 
                 </div>
             </div>
 
-            <!-- Window 6: Auto-Transcribe Panel -->
-            <div class="panel-section" id="window-transcribe" style="display:none;">
-                <div class="panel-section-title">
-                    <span>Auto-Transcribe Audio</span>
-                    <span id="transcribe-status" style="font-size:10px; color:#888;"><i class="fa-solid fa-circle" style="color:#555;"></i> Offline</span>
-                </div>
-                <div class="form-group">
-                    <label>Whisper API Port / URL</label>
-                    <input type="text" id="transcribe-server-url" value="http://localhost:7860" onchange="saveState()">
-                </div>
-                <div class="form-group">
-                    <label>Whisper Model Size</label>
-                    <select id="transcribe-model-select">
-                        <option value="tiny">Tiny (Fast)</option>
-                        <option value="base" selected>Base (Balanced)</option>
-                        <option value="small">Small (High Accuracy)</option>
-                        <option value="medium">Medium (Maximum Accuracy)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Spoken Language</label>
-                    <select id="transcribe-lang-select">
-                        <option value="Auto-Detect" selected>Auto-Detect</option>
-                        <option value="Hindi">Hindi (Hinglish mix)</option>
-                        <option value="English">English</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Quality & Accuracy Mode</label>
-                    <select id="transcribe-accuracy-select">
-                        <option value="Standard (Fast)" selected>Standard (Fast)</option>
-                        <option value="High Accuracy">High Accuracy</option>
-                        <option value="Maximum Accuracy">Maximum Accuracy</option>
-                    </select>
-                </div>
-                <button class="pro-btn" id="transcribe-btn" onclick="runAutoTranscribe()" style="background:#ffd100; color:#000; border-color:#ffd100; font-weight:700; width:100%;"><i class="fa-solid fa-wand-magic-sparkles"></i> Transcribe Audio</button>
-            </div>
+            <!-- Transcribed panel removed (consolidated in files panel) -->
 
             <!-- Window 5: Export Video Panel -->
             <div class="panel-section" id="window-export">
@@ -1271,6 +1368,15 @@ Ensure you use all parameters (zoom, pan, rotation, custom HTML, and entry/exit 
                     </div>
                     <button class="pro-btn" id="start-record-btn" onclick="startTabRecording()" style="background:#00ff66; color:#000; border-color:#00ff66; font-weight: 700; width:100%; margin-bottom:8px;"><i class="fa-solid fa-circle-play"></i> Start Capture</button>
                     <button class="pro-btn" id="stop-record-btn" onclick="stopTabRecording()" style="background:#ff2a2a; color:#fff; border-color:#ff2a2a; font-weight: 700; width:100%;" disabled><i class="fa-solid fa-circle-stop"></i> Stop & Download Video</button>
+                </div>
+                
+                <div class="form-group" style="border-top: 1px solid #333; margin-top: 15px; padding-top: 15px;">
+                    <label>Server-Side MP4 Compilation</label>
+                    <div style="font-size: 11px; color: #bbb; line-height: 1.4; margin-bottom: 8px;">
+                        Recommended for Mobile Phones. This draws and compiles the H.264 MP4 video directly on the PC server backend (no screen recording needed).
+                    </div>
+                    <button class="pro-btn" id="server-render-btn" onclick="runServerSideRender()" style="background:#ffd100; color:#000; border-color:#ffd100; font-weight: 700; width:100%;"><i class="fa-solid fa-server"></i> Render MP4 Video</button>
+                    <span id="server-render-status" style="font-size:10px; color:#aaa; margin-top:4px; display:block; text-align:center;"></span>
                 </div>
             </div>
             
@@ -1565,6 +1671,9 @@ Ensure you use all parameters (zoom, pan, rotation, custom HTML, and entry/exit 
 
         // Window Toggles & Auto-Closer
         function toggleWindow(elementId) {
+            if (elementId === 'window-transcribe') {
+                elementId = 'window-files';
+            }
             const el = document.getElementById(elementId);
             if (el) {
                 if (el.style.display === "none") {
@@ -1575,7 +1684,7 @@ Ensure you use all parameters (zoom, pan, rotation, custom HTML, and entry/exit 
             }
             
             // Adjust Sidebar parent visibility based on panels state
-            const panels = ['window-files', 'window-canvas', 'window-captions', 'window-json-prompt', 'window-transcribe', 'window-export'];
+            const panels = ['window-files', 'window-canvas', 'window-captions', 'window-json-prompt', 'window-export'];
             let anyVisible = false;
             panels.forEach(pId => {
                 const p = document.getElementById(pId);
@@ -1616,6 +1725,9 @@ Ensure you use all parameters (zoom, pan, rotation, custom HTML, and entry/exit 
                 btn.textContent = "Show Panel";
             }
             autoScaleCanvas();
+            if (typeof updateMobileNavCircles === "function") {
+                updateMobileNavCircles();
+            }
             saveState();
         }
 
@@ -1623,7 +1735,7 @@ Ensure you use all parameters (zoom, pan, rotation, custom HTML, and entry/exit 
             const sidebar = document.getElementById("sidebar-right-container");
             const btn = document.getElementById("toggle-sidebar-btn");
             
-            const panels = ['window-files', 'window-canvas', 'window-captions', 'window-json-prompt', 'window-transcribe', 'window-export'];
+            const panels = ['window-files', 'window-canvas', 'window-captions', 'window-json-prompt', 'window-export'];
             
             const updateEye = (id, displayVal) => {
                 const eye = document.getElementById("eye-" + id);
@@ -1662,6 +1774,9 @@ Ensure you use all parameters (zoom, pan, rotation, custom HTML, and entry/exit 
                 btn.textContent = "Show Panel";
             }
             autoScaleCanvas();
+            if (typeof updateMobileNavCircles === "function") {
+                updateMobileNavCircles();
+            }
             saveState();
         }
 
@@ -2595,7 +2710,6 @@ Ensure you use all parameters (zoom, pan, rotation, custom HTML, and entry/exit 
                 dispCanvas: getDisp('window-canvas'),
                 dispCaptions: getDisp('window-captions'),
                 dispJson: getDisp('window-json-prompt'),
-                dispTranscribe: getDisp('window-transcribe'),
                 dispExport: getDisp('window-export'),
                 dispTimeline: getDisp('timeline-window'),
 
@@ -2683,7 +2797,6 @@ Ensure you use all parameters (zoom, pan, rotation, custom HTML, and entry/exit 
                 document.getElementById('window-canvas').style.display = state.dispCanvas || "";
                 document.getElementById('window-captions').style.display = state.dispCaptions || "";
                 document.getElementById('window-json-prompt').style.display = state.dispJson || "";
-                document.getElementById('window-transcribe').style.display = state.dispTranscribe || "none";
                 document.getElementById('window-export').style.display = state.dispExport || "";
                 document.getElementById('timeline-window').style.display = state.dispTimeline || "";
 
@@ -2691,7 +2804,6 @@ Ensure you use all parameters (zoom, pan, rotation, custom HTML, and entry/exit 
                 updateEye('window-canvas', state.dispCanvas || "");
                 updateEye('window-captions', state.dispCaptions || "");
                 updateEye('window-json-prompt', state.dispJson || "");
-                updateEye('window-transcribe', state.dispTranscribe || "none");
                 updateEye('window-export', state.dispExport || "");
                 updateEye('timeline-window', state.dispTimeline || "");
                 updateEye('hotkeys-help', document.getElementById("hotkeys-help").style.display);
@@ -3111,7 +3223,208 @@ Ensure you use all parameters (zoom, pan, rotation, custom HTML, and entry/exit 
             }
         }
 
-        window.onload = loadSavedState;
+        function downloadTranscriptJSON() {
+            if (captionWords.length === 0) {
+                alert("No transcription data available to download.");
+                return;
+            }
+            const blob = new Blob([JSON.stringify(captionWords, null, 2)], {type: "application/json"});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "transcription.json";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        function downloadTranscriptSRT() {
+            if (captionSentences.length === 0) {
+                alert("No transcription data available to download.");
+                return;
+            }
+            let srtText = "";
+            captionSentences.forEach((s, i) => {
+                const startStr = formatSRTTimeStr(s.start);
+                const endStr = formatSRTTimeStr(s.end);
+                srtText += `${i + 1}\n${startStr} --> ${endStr}\n${s.text}\n\n`;
+            });
+            const blob = new Blob([srtText], {type: "text/plain"});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "subtitles.srt";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        function formatSRTTimeStr(seconds) {
+            const h = Math.floor(seconds / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
+            const s = Math.floor(seconds % 60);
+            const ms = Math.floor((seconds - Math.floor(seconds)) * 1000);
+            return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')},${ms.toString().padStart(3, '0')}`;
+        }
+
+        async function runServerSideRender() {
+            const serverUrl = document.getElementById("transcribe-server-url").value.trim();
+            const format = document.getElementById("format-select").value;
+            const status = document.getElementById("server-render-status");
+            const btn = document.getElementById("server-render-btn");
+
+            const pName = document.getElementById("project-name-input").value.trim() || "Project 1";
+            const audioBlob = await getAudioFromDB(pName);
+
+            if (!audioBlob) {
+                alert("Please load an audio track first in the Files & Projects panel.");
+                return;
+            }
+
+            try {
+                btn.disabled = true;
+                status.innerHTML = `<i class="fa-solid fa-spinner fa-spin" style="color:#ffd100;"></i> Uploading track...`;
+
+                const formData = new FormData();
+                formData.append("files", audioBlob, audioBlob.name || "audio.mp3");
+                const uploadRes = await fetch(`${serverUrl}/upload`, {
+                    method: "POST",
+                    body: formData
+                });
+                if (!uploadRes.ok) throw new Error("Upload failed. Whisper server offline?");
+                const uploadData = await uploadRes.json();
+                const fileInfo = uploadData[0];
+
+                status.innerHTML = `<i class="fa-solid fa-spinner fa-spin" style="color:#ffd100;"></i> Compiling H.264 MP4 on server... (may take 20s)`;
+                const predictRes = await fetch(`${serverUrl}/api/predict`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        data: [
+                            fileInfo,
+                            jsonInput.value,
+                            format
+                        ],
+                        fn_index: 1
+                    })
+                });
+                if (!predictRes.ok) throw new Error("Server compile request failed.");
+                const predictData = await predictRes.json();
+                
+                const renderStatusText = predictData.data[0];
+                const renderVideoFileInfo = predictData.data[1];
+
+                if (!renderVideoFileInfo || !renderVideoFileInfo.name) {
+                    throw new Error("Render failed: " + renderStatusText);
+                }
+
+                status.innerHTML = `<i class="fa-solid fa-circle-check" style="color:#00ff66;"></i> Done! Downloading...`;
+
+                const videoDownloadUrl = `${serverUrl}/file=${renderVideoFileInfo.name}`;
+                const a = document.createElement("a");
+                a.href = videoDownloadUrl;
+                a.download = `${pName}_render.mp4`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+
+                status.innerHTML = `<i class="fa-solid fa-circle-check" style="color:#00ff66;"></i> Finished`;
+                alert("Server render complete! Your H.264 MP4 video has been downloaded.");
+            } catch(e) {
+                console.error(e);
+                status.innerHTML = `<i class="fa-solid fa-triangle-exclamation" style="color:#ff2a2a;"></i> Render error`;
+                alert("Server rendering failed: " + e.message);
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        function scrollToPanel(idx) {
+            const sidebar = document.getElementById("sidebar-right-container");
+            if (sidebar) {
+                const panelWidth = sidebar.clientWidth;
+                sidebar.scrollTo({
+                    left: idx * panelWidth,
+                    behavior: "smooth"
+                });
+                
+                // Highlight active nav circle
+                const circles = document.querySelectorAll("#mobile-nav-bar .nav-circle");
+                circles.forEach((c, cIdx) => {
+                    if (cIdx === (idx + 1)) { // skip play button index 0
+                        c.classList.add("active");
+                    } else if (cIdx !== 0 && cIdx !== (circles.length - 1)) {
+                        c.classList.remove("active");
+                    }
+                });
+            }
+        }
+
+        function updateMobileNavCircles() {
+            const panels = ['window-files', 'window-canvas', 'window-captions', 'window-json-prompt', 'window-export', 'timeline-window'];
+            panels.forEach(pId => {
+                const btn = document.getElementById("nav-btn-" + pId);
+                if (btn) {
+                    const p = document.getElementById(pId);
+                    if (p && p.style.display === "none") {
+                        btn.style.display = "none";
+                    } else {
+                        btn.style.display = "flex";
+                    }
+                }
+            });
+        }
+
+        function toggleMobileFullScreen() {
+            const mainWorkspace = document.getElementById("main-workspace");
+            const btn = document.getElementById("mobile-fullscreen-btn");
+            
+            if (mainWorkspace.classList.contains("mobile-fullscreen")) {
+                mainWorkspace.classList.remove("mobile-fullscreen");
+                btn.innerHTML = `<i class="fa-solid fa-expand"></i>`;
+                btn.classList.remove("active");
+            } else {
+                mainWorkspace.classList.add("mobile-fullscreen");
+                btn.innerHTML = `<i class="fa-solid fa-compress"></i>`;
+                btn.classList.add("active");
+            }
+            autoScaleCanvas();
+        }
+
+        function enterFullDisplayMode() {
+            document.body.classList.add("full-display-mode");
+            autoScaleCanvas();
+            alert("Immersive Full Display Mode Active.\n\nDouble-Tap or Double-Click the screen to exit and bring back the editing interface.");
+        }
+
+        function exitFullDisplayMode() {
+            if (document.body.classList.contains("full-display-mode")) {
+                document.body.classList.remove("full-display-mode");
+                autoScaleCanvas();
+            }
+        }
+
+        // Tap-to-Exit listener for Mobile Devices
+        let lastTap = 0;
+        document.addEventListener('touchend', function(event) {
+            const now = new Date().getTime();
+            const timespan = now - lastTap;
+            if (timespan < 300 && timespan > 0) {
+                exitFullDisplayMode();
+                event.preventDefault();
+            }
+            lastTap = now;
+        });
+
+        // Double-click to Exit listener for Desktops
+        document.addEventListener('dblclick', function() {
+            exitFullDisplayMode();
+        });
+
+        window.onload = () => {
+            loadSavedState();
+            updateMobileNavCircles();
+        };
     </script>
 </body>
 </html>
